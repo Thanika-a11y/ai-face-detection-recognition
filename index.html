@@ -113,6 +113,8 @@ color:white;
 
 margin-bottom:30px;
 
+display:block;
+
 }
 
 .upload-box:hover{
@@ -150,13 +152,16 @@ justify-content:center;
 
 }
 
-img{
+#image{
 
 max-width:100%;
+max-height:500px;
 
 border-radius:20px;
 
 box-shadow:0 0 30px rgba(0,255,255,0.4);
+
+display:none;
 
 }
 
@@ -302,11 +307,11 @@ display:none;
 
 <p class="subtitle">
 
-Upload any image and detect faces with intelligent AI recognition ✨
+Upload any image and detect faces using advanced AI ✨
 
 </p>
 
-<label class="upload-box">
+<label for="imageUpload" class="upload-box">
 
 <i class="fa-solid fa-cloud-arrow-up"></i>
 
@@ -316,11 +321,12 @@ Upload any image and detect faces with intelligent AI recognition ✨
 Supports JPG, PNG, JPEG
 </p>
 
-<input type="file"
+</label>
+
+<input
+type="file"
 id="imageUpload"
 accept="image/*">
-
-</label>
 
 <div class="loading" id="loading">
 
@@ -330,7 +336,7 @@ accept="image/*">
 
 <div class="image-container">
 
-<img id="image" crossorigin="anonymous">
+<img id="image">
 
 </div>
 
@@ -338,7 +344,7 @@ accept="image/*">
 
 <div class="footer">
 
-✨ Advanced AI Face Detection & Recognition • Developed By Thanika
+✨ Advanced AI Face Detection & Recognition
 
 </div>
 
@@ -368,29 +374,40 @@ faceapi.nets.faceLandmark68Net.loadFromUri(
 'https://justadudewhohacks.github.io/face-api.js/models'
 ),
 
-faceapi.nets.faceRecognitionNet.loadFromUri(
-'https://justadudewhohacks.github.io/face-api.js/models'
-),
-
 faceapi.nets.faceExpressionNet.loadFromUri(
 'https://justadudewhohacks.github.io/face-api.js/models'
 )
 
-]).then(start);
+]).then(()=>{
 
-function start(){
+console.log("Models Loaded");
 
-imageUpload.addEventListener("change", async ()=>{
+});
 
-const file = imageUpload.files[0];
+imageUpload.addEventListener("change", ()=>{
 
-if(!file) return;
+const file =
+imageUpload.files[0];
+
+if(!file){
+
+return;
+
+}
+
+result.innerHTML = "";
 
 loading.style.display = "block";
 
-image.src = URL.createObjectURL(file);
+image.src =
+URL.createObjectURL(file);
+
+image.style.display = "block";
 
 image.onload = async ()=>{
+
+document.querySelectorAll("canvas")
+.forEach(el=>el.remove());
 
 const detections =
 await faceapi
@@ -401,9 +418,6 @@ new faceapi.TinyFaceDetectorOptions()
 
 .withFaceLandmarks()
 .withFaceExpressions();
-
-document.querySelectorAll("canvas")
-.forEach(el=>el.remove());
 
 const canvas =
 faceapi.createCanvasFromMedia(image);
@@ -461,7 +475,7 @@ result.innerHTML =
 
 <p>⚠️ AI could not detect any face.</p>
 
-<p>📸 Try uploading a clearer image.</p>
+<p>📸 Try another image.</p>
 
 </div>
 
@@ -501,32 +515,26 @@ output +=
 ${Math.round(exp[mood]*100)}%</p>
 
 <p>🧠 AI Status:
-Face Successfully Detected</p>
+Face Detected Successfully</p>
 
-<p>📷 Detection Type:
-Deep Learning AI</p>
-
-<p>🌟 Recognition:
+<p>📷 Recognition:
 Human Face Identified</p>
 
-<p>⚡ AI Speed:
-Real-Time Processing</p>
+<p>⚡ Detection:
+Real-Time AI Processing</p>
 
-<p>🔐 Security Level:
-High Accuracy Recognition</p>
+<p>🌟 Quality:
+Excellent Detection Accuracy</p>
 
-<p>🌍 Face Visibility:
-Clearly Visible</p>
-
-<p>💡 Recommendation:
-Perfect image for recognition.</p>
+<p>🔐 Security:
+Advanced AI Vision Enabled</p>
 
 </div>
 
 <div class="buttons">
 
 <button onclick="
-alert('Viewing Face Details')
+alert('Face Details Opened')
 ">
 
 🔍 Details
@@ -562,8 +570,6 @@ result.innerHTML = output;
 };
 
 });
-
-}
 
 </script>
 
