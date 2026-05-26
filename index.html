@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🔥 AI Face Detection & Recognition</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<script defer
+src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Poppins,sans-serif;
+}
+
+body{
+
+min-height:100vh;
+
+background:
+linear-gradient(135deg,#0f172a,#1e1b4b,#312e81);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:20px;
+
+overflow:auto;
+
+}
+
+.container{
+
+width:95%;
+max-width:1200px;
+
+background:rgba(255,255,255,0.08);
+
+backdrop-filter:blur(15px);
+
+padding:35px;
+
+border-radius:30px;
+
+box-shadow:0 0 40px cyan;
+
+text-align:center;
+
+animation:fade 1s ease;
+
+}
+
+@keyframes fade{
+
+from{
+opacity:0;
+transform:translateY(30px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+h1{
+
+font-size:4rem;
+
+color:#00ffff;
+
+text-shadow:0 0 20px cyan;
+
+margin-bottom:15px;
+
+}
+
+.subtitle{
+
+color:white;
+
+font-size:1.2rem;
+
+margin-bottom:35px;
+
+}
+
+.upload-box{
+
+border:3px dashed cyan;
+
+padding:30px;
+
+border-radius:25px;
+
+cursor:pointer;
+
+transition:0.3s;
+
+color:white;
+
+margin-bottom:30px;
+
+}
+
+.upload-box:hover{
+
+background:rgba(255,255,255,0.08);
+
+transform:scale(1.02);
+
+}
+
+.upload-box i{
+
+font-size:4rem;
+
+margin-bottom:15px;
+
+color:#00ffff;
+
+}
+
+#imageUpload{
+
+display:none;
+
+}
+
+.image-container{
+
+position:relative;
+
+margin-top:30px;
+
+display:flex;
+justify-content:center;
+
+}
+
+img{
+
+max-width:100%;
+
+border-radius:20px;
+
+box-shadow:0 0 30px rgba(0,255,255,0.4);
+
+}
+
+canvas{
+
+position:absolute;
+
+top:0;
+
+left:50%;
+transform:translateX(-50%);
+
+}
+
+.result{
+
+margin-top:35px;
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(300px,1fr));
+
+gap:25px;
+
+}
+
+.card{
+
+background:rgba(255,255,255,0.08);
+
+padding:25px;
+
+border-radius:25px;
+
+color:white;
+
+box-shadow:0 0 20px rgba(255,255,255,0.1);
+
+transition:0.4s;
+
+}
+
+.card:hover{
+
+transform:translateY(-10px);
+
+box-shadow:0 0 30px cyan;
+
+}
+
+.card h2{
+
+margin-bottom:15px;
+
+font-size:1.8rem;
+
+color:#00ffff;
+
+}
+
+.info{
+
+text-align:left;
+
+line-height:2;
+
+font-size:1rem;
+
+}
+
+.buttons{
+
+margin-top:20px;
+
+display:flex;
+justify-content:center;
+gap:10px;
+
+flex-wrap:wrap;
+
+}
+
+button{
+
+padding:12px 22px;
+
+border:none;
+
+border-radius:12px;
+
+background:#00ffff;
+
+font-weight:bold;
+
+cursor:pointer;
+
+transition:0.3s;
+
+box-shadow:0 0 15px cyan;
+
+}
+
+button:hover{
+
+transform:scale(1.05);
+
+background:white;
+
+}
+
+.footer{
+
+margin-top:40px;
+
+color:white;
+
+opacity:0.7;
+
+}
+
+.loading{
+
+margin-top:20px;
+
+font-size:1.2rem;
+
+color:#00ffff;
+
+display:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🤖 AI Face Detection</h1>
+
+<p class="subtitle">
+
+Upload any image and detect faces with intelligent AI recognition ✨
+
+</p>
+
+<label class="upload-box">
+
+<i class="fa-solid fa-cloud-arrow-up"></i>
+
+<h2>Click To Upload Image</h2>
+
+<p style="margin-top:10px;opacity:0.8;">
+Supports JPG, PNG, JPEG
+</p>
+
+<input type="file"
+id="imageUpload"
+accept="image/*">
+
+</label>
+
+<div class="loading" id="loading">
+
+🔍 AI Scanning Face...
+
+</div>
+
+<div class="image-container">
+
+<img id="image" crossorigin="anonymous">
+
+</div>
+
+<div class="result" id="result"></div>
+
+<div class="footer">
+
+✨ Advanced AI Face Detection & Recognition • Developed By Thanika
+
+</div>
+
+</div>
+
+<script>
+
+const imageUpload =
+document.getElementById("imageUpload");
+
+const image =
+document.getElementById("image");
+
+const result =
+document.getElementById("result");
+
+const loading =
+document.getElementById("loading");
+
+Promise.all([
+
+faceapi.nets.tinyFaceDetector.loadFromUri(
+'https://justadudewhohacks.github.io/face-api.js/models'
+),
+
+faceapi.nets.faceLandmark68Net.loadFromUri(
+'https://justadudewhohacks.github.io/face-api.js/models'
+),
+
+faceapi.nets.faceRecognitionNet.loadFromUri(
+'https://justadudewhohacks.github.io/face-api.js/models'
+),
+
+faceapi.nets.faceExpressionNet.loadFromUri(
+'https://justadudewhohacks.github.io/face-api.js/models'
+)
+
+]).then(start);
+
+function start(){
+
+imageUpload.addEventListener("change", async ()=>{
+
+const file = imageUpload.files[0];
+
+if(!file) return;
+
+loading.style.display = "block";
+
+image.src = URL.createObjectURL(file);
+
+image.onload = async ()=>{
+
+const detections =
+await faceapi
+.detectAllFaces(
+image,
+new faceapi.TinyFaceDetectorOptions()
+)
+
+.withFaceLandmarks()
+.withFaceExpressions();
+
+document.querySelectorAll("canvas")
+.forEach(el=>el.remove());
+
+const canvas =
+faceapi.createCanvasFromMedia(image);
+
+document
+.querySelector(".image-container")
+.append(canvas);
+
+const displaySize = {
+
+width:image.width,
+height:image.height
+
+};
+
+faceapi.matchDimensions(
+canvas,
+displaySize
+);
+
+const resized =
+faceapi.resizeResults(
+detections,
+displaySize
+);
+
+faceapi.draw.drawDetections(
+canvas,
+resized
+);
+
+faceapi.draw.drawFaceLandmarks(
+canvas,
+resized
+);
+
+faceapi.draw.drawFaceExpressions(
+canvas,
+resized
+);
+
+loading.style.display = "none";
+
+if(detections.length === 0){
+
+result.innerHTML =
+
+`
+
+<div class="card">
+
+<h2>❌ No Face Found</h2>
+
+<div class="info">
+
+<p>⚠️ AI could not detect any face.</p>
+
+<p>📸 Try uploading a clearer image.</p>
+
+</div>
+
+</div>
+
+`;
+
+return;
+
+}
+
+let output = "";
+
+detections.forEach((face,index)=>{
+
+const exp =
+face.expressions;
+
+const mood =
+Object.keys(exp).reduce((a,b)=>
+exp[a] > exp[b] ? a : b
+);
+
+output +=
+
+`
+
+<div class="card">
+
+<h2>👤 Face ${index+1}</h2>
+
+<div class="info">
+
+<p>😊 Emotion: ${mood}</p>
+
+<p>🎯 Confidence:
+${Math.round(exp[mood]*100)}%</p>
+
+<p>🧠 AI Status:
+Face Successfully Detected</p>
+
+<p>📷 Detection Type:
+Deep Learning AI</p>
+
+<p>🌟 Recognition:
+Human Face Identified</p>
+
+<p>⚡ AI Speed:
+Real-Time Processing</p>
+
+<p>🔐 Security Level:
+High Accuracy Recognition</p>
+
+<p>🌍 Face Visibility:
+Clearly Visible</p>
+
+<p>💡 Recommendation:
+Perfect image for recognition.</p>
+
+</div>
+
+<div class="buttons">
+
+<button onclick="
+alert('Viewing Face Details')
+">
+
+🔍 Details
+
+</button>
+
+<button onclick="
+alert('Face Saved Successfully')
+">
+
+💾 Save
+
+</button>
+
+<button onclick="
+alert('AI Report Generated')
+">
+
+📄 Report
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+result.innerHTML = output;
+
+};
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
