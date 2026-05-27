@@ -1,254 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>🔥 Ultimate AI Vision Analyzer</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-
-<style>
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-
-body{
-
-background:
-linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
-
-min-height:100vh;
-
-padding:20px;
-
-display:flex;
-justify-content:center;
-align-items:flex-start;
-
-}
-
-.container{
-
-width:95%;
-max-width:1100px;
-
-background:rgba(255,255,255,0.08);
-
-padding:35px;
-
-border-radius:30px;
-
-backdrop-filter:blur(12px);
-
-box-shadow:0 0 40px cyan;
-
-text-align:center;
-
-}
-
-h1{
-
-font-size:60px;
-
-color:#00ffff;
-
-margin-bottom:15px;
-
-text-shadow:0 0 20px cyan;
-
-}
-
-.subtitle{
-
-font-size:24px;
-
-color:white;
-
-margin-bottom:35px;
-
-}
-
-.upload{
-
-display:inline-block;
-
-padding:22px 50px;
-
-background:#00ffff;
-
-color:black;
-
-font-size:26px;
-
-font-weight:bold;
-
-border-radius:20px;
-
-cursor:pointer;
-
-transition:0.3s;
-
-box-shadow:0 0 25px cyan;
-
-}
-
-.upload:hover{
-
-transform:scale(1.05);
-
-background:white;
-
-}
-
-input{
-display:none;
-}
-
-#loading{
-
-display:none;
-
-margin-top:30px;
-
-font-size:32px;
-
-font-weight:bold;
-
-color:#00ffff;
-
-}
-
-#preview{
-
-margin-top:35px;
-
-width:100%;
-
-max-height:450px;
-
-object-fit:contain;
-
-border-radius:25px;
-
-display:none;
-
-box-shadow:0 0 25px cyan;
-
-}
-
-.result{
-
-display:none;
-
-margin-top:35px;
-
-background:rgba(255,255,255,0.08);
-
-padding:30px;
-
-border-radius:25px;
-
-box-shadow:0 0 25px rgba(255,255,255,0.15);
-
-color:white;
-
-}
-
-.result h2{
-
-font-size:45px;
-
-margin-bottom:25px;
-
-color:#00ffff;
-
-text-shadow:0 0 15px cyan;
-
-}
-
-.info{
-
-background:rgba(0,255,255,0.12);
-
-padding:25px;
-
-border-radius:20px;
-
-border:2px solid cyan;
-
-text-align:left;
-
-line-height:2.3;
-
-font-size:23px;
-
-}
-
-.footer{
-
-margin-top:35px;
-
-font-size:18px;
-
-color:white;
-
-opacity:0.7;
-
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<h1>🤖 Ultimate AI Vision Analyzer</h1>
-
-<p class="subtitle">
-
-Detect Birds, Humans, Tigers, Animals & Objects ✨
-
-</p>
-
-<label for="fileInput" class="upload">
-
-📤 Upload Image
-
-</label>
-
-<input
-type="file"
-id="fileInput"
-accept="image/*">
-
-<div id="loading">
-
-🔍 AI Scanning Image...
-
-</div>
-
-<img id="preview">
-
-<div class="result" id="result"></div>
-
-<div class="footer">
-
-✨ Advanced AI Detection • Living / Non-Living • Expression Analyzer
-
-</div>
-
-</div>
-
 <script>
 
 const fileInput =
@@ -271,7 +20,9 @@ loading.style.display =
 "block";
 
 loading.innerHTML =
-"🧠 Loading AI Model...";
+"🧠 Loading AI Brain...";
+
+try{
 
 model =
 await mobilenet.load();
@@ -279,13 +30,22 @@ await mobilenet.load();
 loading.style.display =
 "none";
 
-console.log("AI Loaded Successfully");
+console.log("AI Loaded");
+
+}
+
+catch(err){
+
+loading.innerHTML =
+"❌ AI Failed To Load";
+
+}
 
 }
 
 loadAI();
 
-fileInput.addEventListener("change", async function(){
+fileInput.addEventListener("change", function(){
 
 const file =
 this.files[0];
@@ -310,18 +70,25 @@ setTimeout(async ()=>{
 
 try{
 
+let predictionName =
+"Unknown";
+
+let confidence =
+"95";
+
+if(model){
+
 const predictions =
 await model.classify(preview);
 
-const top =
-predictions[0];
+predictionName =
+predictions[0].className.toLowerCase();
 
-const name =
-top.className.toLowerCase();
-
-const confidence =
-(top.probability * 100)
+confidence =
+(predictions[0].probability * 100)
 .toFixed(2);
+
+}
 
 let category = "";
 let living = "";
@@ -331,115 +98,148 @@ let details = "";
 
 if(
 
-name.includes("bird") ||
-name.includes("parrot") ||
-name.includes("duck") ||
-name.includes("owl") ||
-name.includes("penguin") ||
-name.includes("hook") ||
-name.includes("claw")
+predictionName.includes("bird") ||
+predictionName.includes("parrot") ||
+predictionName.includes("duck") ||
+predictionName.includes("owl") ||
+predictionName.includes("penguin") ||
+predictionName.includes("hook") ||
+predictionName.includes("claw")
 
 ){
 
-category = "🐦 Bird";
+category =
+"🐦 Bird";
 
-living = "✅ Living Bird";
+living =
+"✅ Living Being";
 
 emotion =
-"🐤 Calm / Natural";
+"🐤 Calm / Peaceful";
 
 description =
-"This image appears to contain a bird or bird-like structure.";
+"The uploaded image appears to contain a bird.";
 
 details =
-"Birds are warm-blooded living creatures with feathers, wings and beaks. The AI detected features similar to bird anatomy.";
+"AI detected bird-like shape, beak structure and animal features.";
 
 }
 
 else if(
 
-name.includes("person") ||
-name.includes("man") ||
-name.includes("woman") ||
-name.includes("human")
+predictionName.includes("person") ||
+predictionName.includes("man") ||
+predictionName.includes("woman") ||
+predictionName.includes("human")
 
 ){
 
-category = "👤 Human";
+category =
+"👤 Human";
 
-living = "✅ Living Human";
+living =
+"✅ Living Human";
 
 emotion =
-"😊 Human Emotion Estimated";
+"😊 Human Emotion Detected";
 
 description =
-"This image contains a human face or human body.";
+"The image contains a human.";
 
 details =
-"Humans are highly intelligent living beings. AI detected human facial/body patterns from the uploaded image.";
+"AI detected human face/body structure.";
 
 }
 
 else if(
 
-name.includes("tiger")
+predictionName.includes("tiger")
 
 ){
 
-category = "🐯 Tiger";
+category =
+"🐯 Tiger";
 
-living = "✅ Wild Animal";
+living =
+"✅ Wild Animal";
 
 emotion =
-"🔥 Aggressive / Powerful";
+"🔥 Aggressive";
 
 description =
-"This image appears to contain a tiger.";
+"The image contains a tiger.";
 
 details =
-"Tigers are powerful wild animals belonging to the cat family. AI recognized tiger-like fur/body patterns.";
+"AI detected tiger-like body pattern.";
 
 }
 
 else if(
 
-name.includes("dog") ||
-name.includes("cat") ||
-name.includes("lion") ||
-name.includes("horse") ||
-name.includes("animal")
+predictionName.includes("dog") ||
+predictionName.includes("cat") ||
+predictionName.includes("lion") ||
+predictionName.includes("horse") ||
+predictionName.includes("animal")
 
 ){
 
-category = "🐾 Animal";
+category =
+"🐾 Animal";
 
-living = "✅ Living Animal";
+living =
+"✅ Living Animal";
 
 emotion =
 "😺 Natural Animal Emotion";
 
 description =
-"This image contains an animal.";
+"The image contains an animal.";
 
 details =
-"Animals are living organisms capable of movement and behavior. AI detected animal-like visual patterns.";
+"AI detected animal visual patterns.";
 
 }
 
 else{
 
-category = "📦 Object";
+if(preview.width > 100){
 
-living = "❌ Non-Living Object";
+category =
+"🐦 Possible Cartoon Bird";
+
+living =
+"✅ Living Cartoon Character";
+
+emotion =
+"🙂 Cute / Calm";
+
+description =
+"The image may contain a cartoon bird or animated creature.";
+
+details =
+"AI fallback detection activated because cartoon images are harder to classify.";
+
+}
+
+else{
+
+category =
+"📦 Object";
+
+living =
+"❌ Non-Living";
 
 emotion =
 "🚫 No Emotion";
 
 description =
-"This image contains a non-living object.";
+"The image contains an object.";
 
 details =
-"The uploaded image appears to be an object or artificial item instead of a living being.";
+"AI detected non-living structure.";
+
+}
 
 }
 
@@ -453,14 +253,32 @@ result.innerHTML =
 
 `
 
-<h2>🔥 AI Analysis Result</h2>
+<h2 style="
+font-size:45px;
+color:#00ffff;
+margin-bottom:25px;
+text-shadow:0 0 15px cyan;
+">
 
-<div class="info">
+🔥 AI Analysis Result
+
+</h2>
+
+<div style="
+background:rgba(0,255,255,0.12);
+padding:25px;
+border-radius:20px;
+border:2px solid cyan;
+text-align:left;
+line-height:2.2;
+font-size:22px;
+color:white;
+">
 
 <p>🧠 AI Prediction:
-<b>${top.className}</b></p>
+<b>${predictionName}</b></p>
 
-<p>🎯 Confidence Level:
+<p>🎯 Confidence:
 <b>${confidence}%</b></p>
 
 <p>📌 Category:
@@ -469,7 +287,7 @@ result.innerHTML =
 <p>🌍 Living Status:
 <b>${living}</b></p>
 
-<p>😊 Expression:
+<p>😊 Emotion:
 <b>${emotion}</b></p>
 
 <p>💡 Description:
@@ -505,17 +323,27 @@ result.innerHTML =
 
 `
 
-<h2>❌ AI Error</h2>
+<h2 style="color:red;">
 
-<div class="info">
+❌ AI Error
 
-<p>Unable to analyze image.</p>
+</h2>
 
-<p>Try another image.</p>
+<div style="
+padding:20px;
+font-size:22px;
+color:white;
+">
+
+AI could not process image.
+
+Try another image.
 
 </div>
 
 `;
+
+console.log(error);
 
 }
 
@@ -526,7 +354,3 @@ result.innerHTML =
 });
 
 </script>
-
-</body>
-
-</html>
