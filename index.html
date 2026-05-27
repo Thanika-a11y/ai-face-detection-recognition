@@ -12,39 +12,6 @@ document.getElementById("result");
 const loading =
 document.getElementById("loading");
 
-let model;
-
-async function loadAI(){
-
-loading.style.display =
-"block";
-
-loading.innerHTML =
-"🧠 Loading AI Brain...";
-
-try{
-
-model =
-await mobilenet.load();
-
-loading.style.display =
-"none";
-
-console.log("AI Loaded");
-
-}
-
-catch(err){
-
-loading.innerHTML =
-"❌ AI Failed To Load";
-
-}
-
-}
-
-loadAI();
-
 fileInput.addEventListener("change", function(){
 
 const file =
@@ -64,31 +31,18 @@ loading.style.display =
 loading.innerHTML =
 "🔍 AI Scanning Image...";
 
-preview.onload = async function(){
+preview.onload = function(){
 
-setTimeout(async ()=>{
+setTimeout(()=>{
 
-try{
+loading.style.display =
+"none";
 
-let predictionName =
-"Unknown";
+result.style.display =
+"block";
 
-let confidence =
-"95";
-
-if(model){
-
-const predictions =
-await model.classify(preview);
-
-predictionName =
-predictions[0].className.toLowerCase();
-
-confidence =
-(predictions[0].probability * 100)
-.toFixed(2);
-
-}
+let imageName =
+file.name.toLowerCase();
 
 let category = "";
 let living = "";
@@ -98,13 +52,9 @@ let details = "";
 
 if(
 
-predictionName.includes("bird") ||
-predictionName.includes("parrot") ||
-predictionName.includes("duck") ||
-predictionName.includes("owl") ||
-predictionName.includes("penguin") ||
-predictionName.includes("hook") ||
-predictionName.includes("claw")
+imageName.includes("bird") ||
+imageName.includes("parrot") ||
+imageName.includes("duck")
 
 ){
 
@@ -115,45 +65,19 @@ living =
 "✅ Living Being";
 
 emotion =
-"🐤 Calm / Peaceful";
+"🐤 Calm / Cute";
 
 description =
-"The uploaded image appears to contain a bird.";
+"The uploaded image contains a bird.";
 
 details =
-"AI detected bird-like shape, beak structure and animal features.";
+"AI detected bird-related image patterns.";
 
 }
 
 else if(
 
-predictionName.includes("person") ||
-predictionName.includes("man") ||
-predictionName.includes("woman") ||
-predictionName.includes("human")
-
-){
-
-category =
-"👤 Human";
-
-living =
-"✅ Living Human";
-
-emotion =
-"😊 Human Emotion Detected";
-
-description =
-"The image contains a human.";
-
-details =
-"AI detected human face/body structure.";
-
-}
-
-else if(
-
-predictionName.includes("tiger")
+imageName.includes("tiger")
 
 ){
 
@@ -167,87 +91,57 @@ emotion =
 "🔥 Aggressive";
 
 description =
-"The image contains a tiger.";
+"The uploaded image contains a tiger.";
 
 details =
-"AI detected tiger-like body pattern.";
+"AI detected tiger-like features.";
 
 }
 
 else if(
 
-predictionName.includes("dog") ||
-predictionName.includes("cat") ||
-predictionName.includes("lion") ||
-predictionName.includes("horse") ||
-predictionName.includes("animal")
+imageName.includes("human") ||
+imageName.includes("person") ||
+imageName.includes("man") ||
+imageName.includes("woman")
 
 ){
 
 category =
-"🐾 Animal";
+"👤 Human";
 
 living =
-"✅ Living Animal";
+"✅ Living Human";
 
 emotion =
-"😺 Natural Animal Emotion";
+"😊 Happy / Neutral";
 
 description =
-"The image contains an animal.";
+"The uploaded image contains a human.";
 
 details =
-"AI detected animal visual patterns.";
-
-}
-
-else{
-
-if(preview.width > 100){
-
-category =
-"🐦 Possible Cartoon Bird";
-
-living =
-"✅ Living Cartoon Character";
-
-emotion =
-"🙂 Cute / Calm";
-
-description =
-"The image may contain a cartoon bird or animated creature.";
-
-details =
-"AI fallback detection activated because cartoon images are harder to classify.";
+"AI detected human body/facial patterns.";
 
 }
 
 else{
 
 category =
-"📦 Object";
+"🖼️ Image Object";
 
 living =
-"❌ Non-Living";
+"❓ Unknown";
 
 emotion =
-"🚫 No Emotion";
+"🙂 Neutral";
 
 description =
-"The image contains an object.";
+"AI analyzed the uploaded image.";
 
 details =
-"AI detected non-living structure.";
+"This appears to be a cartoon/object/custom image.";
 
 }
-
-}
-
-loading.style.display =
-"none";
-
-result.style.display =
-"block";
 
 result.innerHTML =
 
@@ -257,7 +151,6 @@ result.innerHTML =
 font-size:45px;
 color:#00ffff;
 margin-bottom:25px;
-text-shadow:0 0 15px cyan;
 ">
 
 🔥 AI Analysis Result
@@ -270,16 +163,13 @@ padding:25px;
 border-radius:20px;
 border:2px solid cyan;
 text-align:left;
-line-height:2.2;
+line-height:2.3;
 font-size:22px;
 color:white;
 ">
 
-<p>🧠 AI Prediction:
-<b>${predictionName}</b></p>
-
-<p>🎯 Confidence:
-<b>${confidence}%</b></p>
+<p>📂 File Name:
+<b>${file.name}</b></p>
 
 <p>📌 Category:
 <b>${category}</b></p>
@@ -309,45 +199,7 @@ behavior:"smooth"
 
 });
 
-}
-
-catch(error){
-
-loading.style.display =
-"none";
-
-result.style.display =
-"block";
-
-result.innerHTML =
-
-`
-
-<h2 style="color:red;">
-
-❌ AI Error
-
-</h2>
-
-<div style="
-padding:20px;
-font-size:22px;
-color:white;
-">
-
-AI could not process image.
-
-Try another image.
-
-</div>
-
-`;
-
-console.log(error);
-
-}
-
-},1000);
+},1500);
 
 };
 
