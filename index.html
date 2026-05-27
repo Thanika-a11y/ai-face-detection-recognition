@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Ultimate AI Vision Analyzer</title>
+<title>🔥 Ultimate AI Vision Analyzer</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
@@ -233,7 +233,7 @@ accept="image/*">
 
 <div id="loading">
 
-🔍 AI Scanning Image...
+🧠 Loading AI...
 
 </div>
 
@@ -243,7 +243,7 @@ accept="image/*">
 
 <div class="footer">
 
-✨ Advanced AI Detection • Living / Non-Living • Emotion Analysis
+✨ Advanced AI Detection • Expression Analyzer
 
 </div>
 
@@ -265,9 +265,10 @@ document.getElementById("loading");
 
 let model;
 
-async function startAI(){
+async function loadAI(){
 
-loading.style.display = "block";
+loading.style.display =
+"block";
 
 loading.innerHTML =
 "🧠 Loading AI Model...";
@@ -275,13 +276,14 @@ loading.innerHTML =
 model =
 await mobilenet.load();
 
-loading.style.display = "none";
+loading.style.display =
+"none";
 
 console.log("AI Loaded");
 
 }
 
-startAI();
+loadAI();
 
 fileInput.addEventListener("change", async function(){
 
@@ -323,11 +325,24 @@ let living = "";
 let emotion = "";
 let description = "";
 
-if(name.includes("bird")){
+if(
+
+name.includes("bird") ||
+name.includes("parrot") ||
+name.includes("eagle") ||
+name.includes("owl") ||
+name.includes("penguin") ||
+name.includes("duck") ||
+name.includes("hen") ||
+name.includes("cock") ||
+name.includes("claw") ||
+name.includes("hook")
+
+){
 
 category = "🐦 Bird";
 
-living = "✅ Living Being";
+living = "✅ Living Bird";
 
 emotion =
 "🐤 Calm / Natural";
@@ -337,7 +352,11 @@ description =
 
 }
 
-else if(name.includes("tiger")){
+else if(
+
+name.includes("tiger")
+
+){
 
 category = "🐯 Tiger";
 
@@ -355,7 +374,8 @@ else if(
 
 name.includes("person") ||
 name.includes("man") ||
-name.includes("woman")
+name.includes("woman") ||
+name.includes("human")
 
 ){
 
@@ -376,7 +396,8 @@ else if(
 name.includes("dog") ||
 name.includes("cat") ||
 name.includes("lion") ||
-name.includes("horse")
+name.includes("horse") ||
+name.includes("animal")
 
 ){
 
@@ -396,7 +417,7 @@ else{
 
 category = "📦 Object";
 
-living = "❌ Non-Living";
+living = "❌ Non-Living Object";
 
 emotion =
 "🚫 No Emotion";
@@ -420,7 +441,7 @@ result.innerHTML =
 
 <div class="info">
 
-<p>🧠 Prediction:
+<p>🧠 AI Prediction:
 <b>${top.className}</b></p>
 
 <p>🎯 Confidence:
@@ -429,10 +450,10 @@ result.innerHTML =
 <p>📌 Category:
 <b>${category}</b></p>
 
-<p>🌍 Status:
+<p>🌍 Living Status:
 <b>${living}</b></p>
 
-<p>😊 Emotion:
+<p>😊 Expression:
 <b>${emotion}</b></p>
 
 <p>💡 Description:
