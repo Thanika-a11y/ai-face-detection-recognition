@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🔥 Ultimate AI Vision Analyzer</title>
+<title>Ultimate AI Vision Analyzer</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
@@ -27,11 +27,10 @@ linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
 
 min-height:100vh;
 
+padding:20px;
+
 display:flex;
 justify-content:center;
-align-items:center;
-
-padding:20px;
 
 }
 
@@ -46,7 +45,7 @@ padding:35px;
 
 border-radius:30px;
 
-backdrop-filter:blur(12px);
+backdrop-filter:blur(10px);
 
 box-shadow:0 0 40px cyan;
 
@@ -120,7 +119,7 @@ margin-top:35px;
 
 width:100%;
 
-max-height:500px;
+max-height:450px;
 
 object-fit:contain;
 
@@ -233,7 +232,7 @@ accept="image/*">
 
 <div id="loading">
 
-🧠 Loading AI...
+🔍 AI Scanning Image...
 
 </div>
 
@@ -279,8 +278,6 @@ await mobilenet.load();
 loading.style.display =
 "none";
 
-console.log("AI Loaded");
-
 }
 
 loadAI();
@@ -307,6 +304,8 @@ loading.innerHTML =
 preview.onload =
 async function(){
 
+try{
+
 const predictions =
 await model.classify(preview);
 
@@ -329,14 +328,11 @@ if(
 
 name.includes("bird") ||
 name.includes("parrot") ||
-name.includes("eagle") ||
+name.includes("duck") ||
 name.includes("owl") ||
 name.includes("penguin") ||
-name.includes("duck") ||
-name.includes("hen") ||
-name.includes("cock") ||
-name.includes("claw") ||
-name.includes("hook")
+name.includes("hook") ||
+name.includes("claw")
 
 ){
 
@@ -348,25 +344,7 @@ emotion =
 "🐤 Calm / Natural";
 
 description =
-"AI identified a bird species.";
-
-}
-
-else if(
-
-name.includes("tiger")
-
-){
-
-category = "🐯 Tiger";
-
-living = "✅ Wild Animal";
-
-emotion =
-"🔥 Aggressive";
-
-description =
-"AI identified a tiger.";
+"AI identified a bird-like image.";
 
 }
 
@@ -374,8 +352,7 @@ else if(
 
 name.includes("person") ||
 name.includes("man") ||
-name.includes("woman") ||
-name.includes("human")
+name.includes("woman")
 
 ){
 
@@ -397,7 +374,7 @@ name.includes("dog") ||
 name.includes("cat") ||
 name.includes("lion") ||
 name.includes("horse") ||
-name.includes("animal")
+name.includes("tiger")
 
 ){
 
@@ -423,7 +400,7 @@ emotion =
 "🚫 No Emotion";
 
 description =
-"AI identified a non-living object.";
+"AI identified an object.";
 
 }
 
@@ -441,7 +418,7 @@ result.innerHTML =
 
 <div class="info">
 
-<p>🧠 AI Prediction:
+<p>🧠 Prediction:
 <b>${top.className}</b></p>
 
 <p>🎯 Confidence:
@@ -465,6 +442,38 @@ result.innerHTML =
 </div>
 
 `;
+
+result.scrollIntoView({
+
+behavior:"smooth"
+
+});
+
+}
+
+catch(error){
+
+loading.style.display =
+"none";
+
+result.style.display =
+"block";
+
+result.innerHTML =
+
+`
+
+<h2>❌ AI Error</h2>
+
+<div class="info">
+
+<p>Unable to analyze image.</p>
+
+</div>
+
+`;
+
+}
 
 };
 
