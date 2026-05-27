@@ -6,12 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🔥 Ultimate AI Vision Analyzer</title>
+<title>Ultimate AI Vision Analyzer</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -19,15 +17,15 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Poppins',sans-serif;
+font-family:Arial;
 }
 
 body{
 
-min-height:100vh;
-
 background:
-linear-gradient(135deg,#071028,#16213e,#1e3a8a,#312e81);
+linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
+
+min-height:100vh;
 
 display:flex;
 justify-content:center;
@@ -35,84 +33,56 @@ align-items:center;
 
 padding:20px;
 
-overflow:auto;
-
 }
 
 .container{
 
 width:95%;
-max-width:1200px;
+max-width:1100px;
 
 background:rgba(255,255,255,0.08);
 
-border-radius:35px;
+padding:35px;
 
-padding:40px;
+border-radius:30px;
 
-backdrop-filter:blur(14px);
+backdrop-filter:blur(12px);
 
-box-shadow:
-0 0 40px cyan,
-0 0 80px rgba(0,255,255,0.3);
+box-shadow:0 0 40px cyan;
 
 text-align:center;
 
-animation:fade 1s ease;
-
 }
 
-@keyframes fade{
+h1{
 
-from{
-opacity:0;
-transform:translateY(40px);
-}
+font-size:55px;
 
-to{
-opacity:1;
-transform:translateY(0);
-}
+color:cyan;
 
-}
+margin-bottom:15px;
 
-.title{
-
-font-size:4rem;
-
-font-weight:700;
-
-color:#00ffff;
-
-text-shadow:
-0 0 10px cyan,
-0 0 30px cyan;
-
-margin-bottom:10px;
+text-shadow:0 0 20px cyan;
 
 }
 
 .subtitle{
 
-font-size:1.3rem;
-
 color:white;
+
+font-size:22px;
 
 margin-bottom:35px;
 
-opacity:0.9;
-
 }
 
-.upload-btn{
+.upload{
 
 display:inline-block;
 
-padding:22px 45px;
+padding:20px 45px;
 
-border-radius:25px;
-
-background:#00ffff;
+background:cyan;
 
 color:black;
 
@@ -120,24 +90,28 @@ font-size:24px;
 
 font-weight:bold;
 
+border-radius:20px;
+
 cursor:pointer;
 
-transition:0.4s;
+transition:0.3s;
 
-box-shadow:0 0 30px cyan;
+box-shadow:0 0 20px cyan;
 
 }
 
-.upload-btn:hover{
+.upload:hover{
 
-transform:scale(1.06);
+transform:scale(1.05);
 
 background:white;
 
 }
 
 input{
+
 display:none;
+
 }
 
 #preview{
@@ -150,7 +124,7 @@ max-height:500px;
 
 object-fit:contain;
 
-border-radius:30px;
+border-radius:25px;
 
 display:none;
 
@@ -158,35 +132,17 @@ box-shadow:0 0 25px cyan;
 
 }
 
-.loading{
+#loading{
 
 display:none;
 
-margin-top:30px;
+margin-top:25px;
 
-font-size:30px;
+font-size:28px;
+
+color:cyan;
 
 font-weight:bold;
-
-color:#00ffff;
-
-animation:pulse 1s infinite;
-
-}
-
-@keyframes pulse{
-
-0%{
-opacity:0.5;
-}
-
-50%{
-opacity:1;
-}
-
-100%{
-opacity:0.5;
-}
 
 }
 
@@ -196,105 +152,55 @@ display:none;
 
 margin-top:35px;
 
-padding:35px;
-
-border-radius:30px;
-
 background:rgba(255,255,255,0.08);
 
-box-shadow:0 0 30px rgba(255,255,255,0.2);
+padding:30px;
+
+border-radius:25px;
 
 color:white;
 
-animation:fade 1s ease;
+box-shadow:0 0 25px rgba(255,255,255,0.15);
 
 }
 
 .result h2{
 
-font-size:45px;
+font-size:40px;
 
 margin-bottom:25px;
 
 color:#00ffff;
 
-text-shadow:0 0 15px cyan;
-
 }
 
-.info-box{
+.info{
 
 background:rgba(0,255,255,0.12);
 
 padding:25px;
 
-border-radius:25px;
+border-radius:20px;
+
+line-height:2.2;
+
+font-size:22px;
 
 border:2px solid cyan;
 
 text-align:left;
 
-line-height:2.3;
-
-font-size:23px;
-
-}
-
-.info-box p{
-
-margin-bottom:10px;
-
-}
-
-.highlight{
-
-color:#00ffff;
-
-font-weight:bold;
-
-}
-
-.report-btn{
-
-margin-top:30px;
-
-padding:18px 35px;
-
-background:#00ffff;
-
-border:none;
-
-border-radius:18px;
-
-font-size:20px;
-
-font-weight:bold;
-
-cursor:pointer;
-
-transition:0.3s;
-
-box-shadow:0 0 20px cyan;
-
-}
-
-.report-btn:hover{
-
-transform:scale(1.05);
-
-background:white;
-
 }
 
 .footer{
 
-margin-top:30px;
-
-font-size:18px;
+margin-top:35px;
 
 color:white;
 
 opacity:0.7;
+
+font-size:18px;
 
 }
 
@@ -306,19 +212,15 @@ opacity:0.7;
 
 <div class="container">
 
-<h1 class="title">
-
-🤖 Ultimate AI Vision Analyzer
-
-</h1>
+<h1>🤖 Ultimate AI Vision Analyzer</h1>
 
 <p class="subtitle">
 
-Detect Humans, Tigers, Birds, Animals, Objects and analyze expressions intelligently ✨
+Detect Birds, Humans, Tigers, Animals & Objects ✨
 
 </p>
 
-<label for="fileInput" class="upload-btn">
+<label for="fileInput" class="upload">
 
 📤 Upload Image
 
@@ -329,9 +231,9 @@ type="file"
 id="fileInput"
 accept="image/*">
 
-<div class="loading" id="loading">
+<div id="loading">
 
-🧠 AI Scanning Image...
+🔍 AI Scanning Image...
 
 </div>
 
@@ -341,7 +243,7 @@ accept="image/*">
 
 <div class="footer">
 
-✨ Advanced AI Detection • Living / Non-Living • Expression Analyzer
+✨ Advanced AI Detection • Living / Non-Living • Emotion Analysis
 
 </div>
 
@@ -363,42 +265,45 @@ document.getElementById("loading");
 
 let model;
 
-async function loadAI(){
+async function startAI(){
 
 loading.style.display = "block";
 
 loading.innerHTML =
-"🧠 Loading Advanced AI Model...";
+"🧠 Loading AI Model...";
 
 model =
 await mobilenet.load();
 
 loading.style.display = "none";
 
-console.log("AI Loaded Successfully");
+console.log("AI Loaded");
 
 }
 
-loadAI();
+startAI();
 
-fileInput.addEventListener("change", async ()=>{
+fileInput.addEventListener("change", async function(){
 
 const file =
-fileInput.files[0];
+this.files[0];
 
 if(!file) return;
 
 preview.src =
 URL.createObjectURL(file);
 
-preview.style.display = "block";
+preview.style.display =
+"block";
 
-loading.style.display = "block";
+loading.style.display =
+"block";
 
 loading.innerHTML =
 "🔍 AI Scanning Image...";
 
-preview.onload = async ()=>{
+preview.onload =
+async function(){
 
 const predictions =
 await model.classify(preview);
@@ -406,7 +311,7 @@ await model.classify(preview);
 const top =
 predictions[0];
 
-const prediction =
+const name =
 top.className.toLowerCase();
 
 const confidence =
@@ -415,92 +320,42 @@ const confidence =
 
 let category = "";
 let living = "";
-let expression = "";
+let emotion = "";
 let description = "";
-let emotionLevel = "";
-let danger = "";
-let behavior = "";
 
-if(
-
-prediction.includes("bird")
-
-){
+if(name.includes("bird")){
 
 category = "🐦 Bird";
 
 living = "✅ Living Being";
 
-expression = "🐤 Calm / Natural";
-
-emotionLevel = "😊 Peaceful";
-
-danger = "🟢 Safe";
-
-behavior = "Flying / Nature Activity";
+emotion =
+"🐤 Calm / Natural";
 
 description =
-"AI identified a bird species in the uploaded image.";
+"AI identified a bird species.";
 
 }
 
-else if(
-
-prediction.includes("tiger")
-
-){
+else if(name.includes("tiger")){
 
 category = "🐯 Tiger";
 
-living = "✅ Wild Living Animal";
+living = "✅ Wild Animal";
 
-expression = "🔥 Aggressive / Powerful";
-
-emotionLevel = "😠 Dominant";
-
-danger = "🔴 Dangerous";
-
-behavior = "Wild Predator";
+emotion =
+"🔥 Aggressive";
 
 description =
-"AI identified a tiger with strong wild-animal characteristics.";
+"AI identified a tiger.";
 
 }
 
 else if(
 
-prediction.includes("dog") ||
-prediction.includes("cat") ||
-prediction.includes("horse") ||
-prediction.includes("lion") ||
-prediction.includes("elephant") ||
-prediction.includes("animal")
-
-){
-
-category = "🐾 Animal";
-
-living = "✅ Living Animal";
-
-expression = "😊 Animal mood estimated";
-
-emotionLevel = "😄 Active";
-
-danger = "🟡 Depends on animal";
-
-behavior = "Natural Animal Activity";
-
-description =
-"AI identified an animal in the image.";
-
-}
-
-else if(
-
-prediction.includes("person") ||
-prediction.includes("man") ||
-prediction.includes("woman") ||
-prediction.includes("human")
+name.includes("person") ||
+name.includes("man") ||
+name.includes("woman")
 
 ){
 
@@ -508,16 +363,32 @@ category = "👤 Human";
 
 living = "✅ Living Human";
 
-expression = "😊 Human Emotion Detected";
-
-emotionLevel = "😄 Happy / Neutral";
-
-danger = "🟢 Safe";
-
-behavior = "Human Activity";
+emotion =
+"😊 Human Emotion Estimated";
 
 description =
-"AI identified a human face and estimated emotional state.";
+"AI identified a human.";
+
+}
+
+else if(
+
+name.includes("dog") ||
+name.includes("cat") ||
+name.includes("lion") ||
+name.includes("horse")
+
+){
+
+category = "🐾 Animal";
+
+living = "✅ Living Animal";
+
+emotion =
+"😺 Animal Mood Estimated";
+
+description =
+"AI identified an animal.";
 
 }
 
@@ -525,24 +396,21 @@ else{
 
 category = "📦 Object";
 
-living = "❌ Non Living Object";
+living = "❌ Non-Living";
 
-expression = "🚫 No Emotion";
-
-emotionLevel = "🚫 Not Applicable";
-
-danger = "🟢 Safe";
-
-behavior = "Static Object";
+emotion =
+"🚫 No Emotion";
 
 description =
 "AI identified a non-living object.";
 
 }
 
-loading.style.display = "none";
+loading.style.display =
+"none";
 
-result.style.display = "block";
+result.style.display =
+"block";
 
 result.innerHTML =
 
@@ -550,74 +418,36 @@ result.innerHTML =
 
 <h2>🔥 AI Analysis Result</h2>
 
-<div class="info-box">
+<div class="info">
 
-<p>🧠 AI Prediction:
-<span class="highlight">${top.className}</span></p>
+<p>🧠 Prediction:
+<b>${top.className}</b></p>
 
-<p>🎯 Confidence Level:
-<span class="highlight">${confidence}%</span></p>
+<p>🎯 Confidence:
+<b>${confidence}%</b></p>
 
 <p>📌 Category:
-<span class="highlight">${category}</span></p>
+<b>${category}</b></p>
 
-<p>🌍 Living Status:
-<span class="highlight">${living}</span></p>
+<p>🌍 Status:
+<b>${living}</b></p>
 
-<p>😊 Expression:
-<span class="highlight">${expression}</span></p>
-
-<p>💖 Emotion Level:
-<span class="highlight">${emotionLevel}</span></p>
-
-<p>⚠ Danger Status:
-<span class="highlight">${danger}</span></p>
-
-<p>⚡ Behavior:
-<span class="highlight">${behavior}</span></p>
-
-<p>📸 Image Quality:
-<span class="highlight">Excellent</span></p>
-
-<p>🚀 AI Processing:
-<span class="highlight">Ultra Fast</span></p>
+<p>😊 Emotion:
+<b>${emotion}</b></p>
 
 <p>💡 Description:
-<span class="highlight">${description}</span></p>
+<b>${description}</b></p>
+
+<p>⚡ AI Recognition:
+<b>Successful</b></p>
 
 </div>
-
-<button class="report-btn" onclick="showReport()">
-
-📄 View Detailed AI Report
-
-</button>
 
 `;
 
 };
 
 });
-
-function showReport(){
-
-alert(
-
-"🤖 ULTIMATE AI REPORT\n\n" +
-
-"✔ Intelligent Image Detection Completed\n" +
-
-"✔ Living / Non-Living Verified\n" +
-
-"✔ Human / Animal / Bird / Object Classified\n" +
-
-"✔ Expression & Emotion Estimated\n" +
-
-"✔ Advanced AI Recognition Successful"
-
-);
-
-}
 
 </script>
 
