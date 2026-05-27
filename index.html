@@ -1,208 +1,293 @@
-<script>
-
-const fileInput =
-document.getElementById("fileInput");
-
-const preview =
-document.getElementById("preview");
-
-const result =
-document.getElementById("result");
-
-const loading =
-document.getElementById("loading");
-
-fileInput.addEventListener("change", function(){
-
-const file =
-this.files[0];
-
-if(!file) return;
-
-preview.src =
-URL.createObjectURL(file);
-
-preview.style.display =
-"block";
-
-loading.style.display =
-"block";
-
-loading.innerHTML =
-"🔍 AI Scanning Image...";
-
-preview.onload = function(){
-
-setTimeout(()=>{
-
-loading.style.display =
-"none";
-
-result.style.display =
-"block";
-
-let imageName =
-file.name.toLowerCase();
-
-let category = "";
-let living = "";
-let emotion = "";
-let description = "";
-let details = "";
-
-if(
-
-imageName.includes("bird") ||
-imageName.includes("parrot") ||
-imageName.includes("duck")
-
-){
-
-category =
-"🐦 Bird";
-
-living =
-"✅ Living Being";
-
-emotion =
-"🐤 Calm / Cute";
-
-description =
-"The uploaded image contains a bird.";
-
-details =
-"AI detected bird-related image patterns.";
-
-}
-
-else if(
-
-imageName.includes("tiger")
-
-){
-
-category =
-"🐯 Tiger";
-
-living =
-"✅ Wild Animal";
-
-emotion =
-"🔥 Aggressive";
-
-description =
-"The uploaded image contains a tiger.";
-
-details =
-"AI detected tiger-like features.";
-
-}
-
-else if(
-
-imageName.includes("human") ||
-imageName.includes("person") ||
-imageName.includes("man") ||
-imageName.includes("woman")
-
-){
-
-category =
-"👤 Human";
-
-living =
-"✅ Living Human";
-
-emotion =
-"😊 Happy / Neutral";
-
-description =
-"The uploaded image contains a human.";
-
-details =
-"AI detected human body/facial patterns.";
-
-}
-
-else{
-
-category =
-"🖼️ Image Object";
-
-living =
-"❓ Unknown";
-
-emotion =
-"🙂 Neutral";
-
-description =
-"AI analyzed the uploaded image.";
-
-details =
-"This appears to be a cartoon/object/custom image.";
-
-}
-
-result.innerHTML =
-
-`
-
-<h2 style="
-font-size:45px;
-color:#00ffff;
-margin-bottom:25px;
-">
-
-🔥 AI Analysis Result
-
-</h2>
-
-<div style="
-background:rgba(0,255,255,0.12);
-padding:25px;
-border-radius:20px;
-border:2px solid cyan;
-text-align:left;
-line-height:2.3;
-font-size:22px;
-color:white;
-">
-
-<p>📂 File Name:
-<b>${file.name}</b></p>
-
-<p>📌 Category:
-<b>${category}</b></p>
-
-<p>🌍 Living Status:
-<b>${living}</b></p>
-
-<p>😊 Emotion:
-<b>${emotion}</b></p>
-
-<p>💡 Description:
-<b>${description}</b></p>
-
-<p>📘 Detailed Analysis:
-<b>${details}</b></p>
-
-<p>⚡ AI Recognition:
-<b>Successful</b></p>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Task 5 – Face Detection</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0a0e17;--surface:#111827;--border:#1e3a5f;
+    --accent:#00d4ff;--success:#00e676;--danger:#ff4757;
+    --text:#c9d6e3;--muted:#4a6080;
+  }
+  body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;}
+  body::before{content:'';position:fixed;inset:0;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.012) 2px,rgba(0,212,255,0.012) 4px);
+    pointer-events:none;z-index:999;}
+  h1{font-size:1.5rem;color:#fff;margin-bottom:0.3rem;letter-spacing:0.05em;}
+  h1 span{color:var(--accent);}
+  .tag{font-size:0.7rem;color:var(--accent);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:1.25rem;width:100%;max-width:700px;margin-bottom:1rem;}
+  .card-title{font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;
+    border-bottom:1px solid var(--border);padding-bottom:0.5rem;margin-bottom:1rem;}
+  .video-wrap{position:relative;width:100%;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+  .video-wrap::before,.video-wrap::after{content:'';position:absolute;width:18px;height:18px;border-color:var(--accent);border-style:solid;z-index:10;}
+  .video-wrap::before{top:8px;left:8px;border-width:2px 0 0 2px;}
+  .video-wrap::after{bottom:8px;right:8px;border-width:0 2px 2px 0;}
+  video,canvas{display:block;width:100%;height:auto;}
+  canvas{position:absolute;top:0;left:0;}
+  .controls{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.9rem;align-items:center;}
+  button{font-family:'Courier New',monospace;font-size:0.75rem;letter-spacing:0.08em;
+    padding:0.5rem 1rem;border-radius:6px;border:1px solid var(--accent);
+    background:transparent;color:var(--accent);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
+  button:hover:not(:disabled){background:var(--accent);color:#000;}
+  button:disabled{opacity:0.3;cursor:not-allowed;}
+  button.red{border-color:var(--danger);color:var(--danger);}
+  button.red:hover:not(:disabled){background:var(--danger);color:#fff;}
+  .status{display:flex;align-items:center;gap:0.5rem;margin-top:0.7rem;font-size:0.72rem;color:var(--muted);}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
+  .dot.on{background:var(--success);animation:blink 1.2s infinite;}
+  .dot.spin{background:var(--accent);animation:blink 0.5s infinite;}
+  .dot.err{background:var(--danger);}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;}
+  .stat{background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:8px;
+    padding:0.8rem;text-align:center;}
+  .stat .v{font-size:1.8rem;color:var(--accent);line-height:1;}
+  .stat .l{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
+  .log{font-size:0.7rem;color:var(--muted);max-height:100px;overflow-y:auto;line-height:1.9;}
+  .log .ok{color:var(--success);}
+  .log .err{color:var(--danger);}
+  .log .info{color:var(--text);}
+  #imgCanvas{display:none;width:100%;border-radius:8px;border:1px solid var(--border);margin-top:0.75rem;}
+  label.upload{cursor:pointer;font-family:'Courier New',monospace;font-size:0.75rem;letter-spacing:0.08em;
+    padding:0.5rem 1rem;border-radius:6px;border:1px solid #0077ff;color:#0077ff;
+    text-transform:uppercase;transition:all 0.2s;}
+  label.upload:hover{background:#0077ff;color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="tag">// Task 5 · Computer Vision</div>
+<h1>Face <span>Detection</span> & Recognition</h1>
+
+<div class="card">
+  <div class="card-title">▶ Live Camera</div>
+  <div class="video-wrap">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+  <div class="controls">
+    <button id="btnStart">▶ Start Camera</button>
+    <button id="btnStop" class="red" disabled>■ Stop</button>
+    <button id="btnCap" disabled>⬇ Capture</button>
+  </div>
+  <div class="status">
+    <div class="dot spin" id="dot"></div>
+    <span id="statusTx">Loading TensorFlow models…</span>
+  </div>
 </div>
 
-`;
+<div class="card">
+  <div class="card-title">▶ Stats</div>
+  <div class="stats">
+    <div class="stat"><div class="v" id="sFaces">0</div><div class="l">Faces Detected</div></div>
+    <div class="stat"><div class="v" id="sFps">0</div><div class="l">FPS</div></div>
+  </div>
+</div>
 
-result.scrollIntoView({
+<div class="card">
+  <div class="card-title">▶ Detect from Image</div>
+  <div class="controls">
+    <label class="upload" for="imgInput">⬆ Upload Image</label>
+    <input type="file" id="imgInput" accept="image/*" style="display:none"/>
+  </div>
+  <canvas id="imgCanvas"></canvas>
+</div>
 
-behavior:"smooth"
+<div class="card">
+  <div class="card-title">▶ System Log</div>
+  <div class="log" id="log"></div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js"></script>
+<script>
+const video   = document.getElementById('video');
+const overlay = document.getElementById('overlay');
+const ctx     = overlay.getContext('2d');
+const dot     = document.getElementById('dot');
+const stTx    = document.getElementById('statusTx');
+const btnStart= document.getElementById('btnStart');
+const btnStop = document.getElementById('btnStop');
+const btnCap  = document.getElementById('btnCap');
+const logEl   = document.getElementById('log');
+
+let model=null, stream=null, rafId=null;
+let fpsCounter=0, lastFpsTime=Date.now();
+
+function log(msg,cls='info'){
+  const d=document.createElement('div');
+  d.className=cls;
+  d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
+  logEl.prepend(d);
+}
+function setStatus(msg,state=''){
+  stTx.textContent=msg;
+  dot.className='dot '+state;
+}
+
+// Load BlazeFace model
+(async()=>{
+  try{
+    log('Loading BlazeFace model from CDN…');
+    model = await blazeface.load();
+    setStatus('Model ready — click Start Camera','');
+    btnStart.disabled=false;
+    log('Model loaded successfully.','ok');
+  }catch(e){
+    setStatus('Model load failed','err');
+    log('Error: '+e.message,'err');
+  }
+})();
+
+btnStart.addEventListener('click', async()=>{
+  if(!model){log('Model not ready yet','err');return;}
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+    video.srcObject=stream;
+    await video.play();
+    btnStart.disabled=true;
+    btnStop.disabled=false;
+    btnCap.disabled=false;
+    setStatus('Camera active — detecting faces','on');
+    log('Camera started.','ok');
+    detect();
+  }catch(e){
+    setStatus('Camera error','err');
+    log('Camera error: '+e.message+'. Make sure you allow camera permission.','err');
+  }
 });
 
-},1500);
-
-};
-
+btnStop.addEventListener('click',()=>{
+  cancelAnimationFrame(rafId);
+  if(stream) stream.getTracks().forEach(t=>t.stop());
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+  btnStart.disabled=false;
+  btnStop.disabled=true;
+  btnCap.disabled=true;
+  setStatus('Camera stopped','');
+  document.getElementById('sFaces').textContent='0';
+  document.getElementById('sFps').textContent='0';
+  log('Camera stopped.');
 });
 
+btnCap.addEventListener('click',()=>{
+  const c=document.createElement('canvas');
+  c.width=video.videoWidth; c.height=video.videoHeight;
+  c.getContext('2d').drawImage(video,0,0);
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download='face_capture_'+Date.now()+'.png';
+  a.click();
+  log('Frame captured.','ok');
+});
+
+const COLORS=['#00d4ff','#00e676','#ffeb3b','#ff6b9d'];
+
+async function detect(){
+  if(!stream) return;
+  overlay.width=video.videoWidth||640;
+  overlay.height=video.videoHeight||480;
+
+  const predictions = await model.estimateFaces(video, false);
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+
+  document.getElementById('sFaces').textContent=predictions.length;
+
+  predictions.forEach((p,i)=>{
+    const [x1,y1]=p.topLeft;
+    const [x2,y2]=p.bottomRight;
+    const w=x2-x1, h=y2-y1;
+    const col=COLORS[i%COLORS.length];
+    const prob=(p.probability[0]*100).toFixed(0);
+
+    // box
+    ctx.strokeStyle=col;
+    ctx.lineWidth=2;
+    ctx.strokeRect(x1,y1,w,h);
+
+    // corner brackets
+    const cs=16;
+    ctx.strokeStyle='#fff';
+    ctx.lineWidth=2.5;
+    [[x1,y1,1,1],[x2,y1,-1,1],[x1,y2,1,-1],[x2,y2,-1,-1]].forEach(([cx,cy,dx,dy])=>{
+      ctx.beginPath();
+      ctx.moveTo(cx+dx*cs,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+dy*cs);
+      ctx.stroke();
+    });
+
+    // label badge
+    const label=`FACE ${i+1} · ${prob}%`;
+    ctx.fillStyle=col;
+    ctx.fillRect(x1, y1-22, label.length*7.8+8, 20);
+    ctx.fillStyle='#000';
+    ctx.font='bold 12px "Courier New"';
+    ctx.fillText(label, x1+4, y1-6);
+
+    // landmarks (eyes, nose, mouth, ears)
+    if(p.landmarks){
+      p.landmarks.forEach(([lx,ly])=>{
+        ctx.beginPath();
+        ctx.arc(lx,ly,3,0,Math.PI*2);
+        ctx.fillStyle=col;
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(lx,ly,3,0,Math.PI*2);
+        ctx.strokeStyle='#000';
+        ctx.lineWidth=1;
+        ctx.stroke();
+      });
+    }
+  });
+
+  // FPS
+  fpsCounter++;
+  const now=Date.now();
+  if(now-lastFpsTime>=1000){
+    document.getElementById('sFps').textContent=fpsCounter;
+    fpsCounter=0;
+    lastFpsTime=now;
+  }
+
+  rafId=requestAnimationFrame(detect);
+}
+
+// Image upload
+document.getElementById('imgInput').addEventListener('change',async e=>{
+  const file=e.target.files[0];
+  if(!file||!model) return;
+  const url=URL.createObjectURL(file);
+  const img=new Image();
+  img.src=url;
+  img.onload=async()=>{
+    const ic=document.getElementById('imgCanvas');
+    ic.width=img.naturalWidth; ic.height=img.naturalHeight;
+    ic.style.display='block';
+    const c=ic.getContext('2d');
+    c.drawImage(img,0,0);
+    log(`Analysing ${file.name}…`);
+    const preds=await model.estimateFaces(img,false);
+    log(`Found ${preds.length} face(s).`,preds.length>0?'ok':'info');
+    preds.forEach((p,i)=>{
+      const [x1,y1]=p.topLeft;
+      const [x2,y2]=p.bottomRight;
+      const w=x2-x1,h=y2-y1;
+      const col=COLORS[i%COLORS.length];
+      c.strokeStyle=col; c.lineWidth=3; c.strokeRect(x1,y1,w,h);
+      const label=`FACE ${i+1} · ${(p.probability[0]*100).toFixed(0)}%`;
+      c.fillStyle=col; c.fillRect(x1,y1-24,label.length*8+8,22);
+      c.fillStyle='#000'; c.font='bold 13px monospace'; c.fillText(label,x1+4,y1-6);
+      if(p.landmarks) p.landmarks.forEach(([lx,ly])=>{
+        c.beginPath(); c.arc(lx,ly,4,0,Math.PI*2); c.fillStyle=col; c.fill();
+      });
+    });
+    URL.revokeObjectURL(url);
+  };
+});
 </script>
+</body>
+</html>
