@@ -3,108 +3,183 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Task 5 – Face Detection</title>
+<title>Task 5 – Face Detection & Analysis</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{
-    --bg:#0a0e17;--surface:#111827;--border:#1e3a5f;
-    --accent:#00d4ff;--success:#00e676;--danger:#ff4757;
-    --text:#c9d6e3;--muted:#4a6080;
-  }
-  body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;
-    min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;}
-  body::before{content:'';position:fixed;inset:0;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.012) 2px,rgba(0,212,255,0.012) 4px);
-    pointer-events:none;z-index:999;}
-  h1{font-size:1.5rem;color:#fff;margin-bottom:0.3rem;letter-spacing:0.05em;}
-  h1 span{color:var(--accent);}
-  .tag{font-size:0.7rem;color:var(--accent);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:1.5rem;}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
-    padding:1.25rem;width:100%;max-width:700px;margin-bottom:1rem;}
-  .card-title{font-size:0.68rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;
-    border-bottom:1px solid var(--border);padding-bottom:0.5rem;margin-bottom:1rem;}
-  .video-wrap{position:relative;width:100%;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
-  .video-wrap::before,.video-wrap::after{content:'';position:absolute;width:18px;height:18px;border-color:var(--accent);border-style:solid;z-index:10;}
-  .video-wrap::before{top:8px;left:8px;border-width:2px 0 0 2px;}
-  .video-wrap::after{bottom:8px;right:8px;border-width:0 2px 2px 0;}
-  video,canvas{display:block;width:100%;height:auto;}
-  canvas{position:absolute;top:0;left:0;}
-  .controls{display:flex;gap:0.6rem;flex-wrap:wrap;margin-top:0.9rem;align-items:center;}
-  button{font-family:'Courier New',monospace;font-size:0.75rem;letter-spacing:0.08em;
-    padding:0.5rem 1rem;border-radius:6px;border:1px solid var(--accent);
-    background:transparent;color:var(--accent);cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
-  button:hover:not(:disabled){background:var(--accent);color:#000;}
-  button:disabled{opacity:0.3;cursor:not-allowed;}
-  button.red{border-color:var(--danger);color:var(--danger);}
-  button.red:hover:not(:disabled){background:var(--danger);color:#fff;}
-  .status{display:flex;align-items:center;gap:0.5rem;margin-top:0.7rem;font-size:0.72rem;color:var(--muted);}
-  .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
-  .dot.on{background:var(--success);animation:blink 1.2s infinite;}
-  .dot.spin{background:var(--accent);animation:blink 0.5s infinite;}
-  .dot.err{background:var(--danger);}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
-  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:0.6rem;}
-  .stat{background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:8px;
-    padding:0.8rem;text-align:center;}
-  .stat .v{font-size:1.8rem;color:var(--accent);line-height:1;}
-  .stat .l{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
-  .log{font-size:0.7rem;color:var(--muted);max-height:100px;overflow-y:auto;line-height:1.9;}
-  .log .ok{color:var(--success);}
-  .log .err{color:var(--danger);}
-  .log .info{color:var(--text);}
-  #imgCanvas{display:none;width:100%;border-radius:8px;border:1px solid var(--border);margin-top:0.75rem;}
-  label.upload{cursor:pointer;font-family:'Courier New',monospace;font-size:0.75rem;letter-spacing:0.08em;
-    padding:0.5rem 1rem;border-radius:6px;border:1px solid #0077ff;color:#0077ff;
-    text-transform:uppercase;transition:all 0.2s;}
-  label.upload:hover{background:#0077ff;color:#fff;}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060a12;--surface:#0d1520;--surface2:#111f30;
+  --border:#1a3050;--accent:#00d4ff;--accent2:#0077ff;
+  --success:#00e676;--danger:#ff4757;--warn:#ffb300;
+  --text:#c9d6e3;--muted:#3d5a7a;
+}
+body{background:var(--bg);color:var(--text);font-family:'Courier New',monospace;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem;}
+body::before{content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,212,255,0.01) 3px,rgba(0,212,255,0.01) 4px);
+  pointer-events:none;z-index:9999;}
+header{text-align:center;margin-bottom:1.5rem;}
+header .tag{font-size:0.65rem;color:var(--accent);letter-spacing:0.25em;text-transform:uppercase;margin-bottom:0.4rem;}
+header h1{font-size:1.6rem;color:#fff;letter-spacing:0.06em;}
+header h1 span{color:var(--accent);}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:1rem;width:100%;max-width:1100px;}
+@media(max-width:760px){.layout{grid-template-columns:1fr;}}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem;margin-bottom:1rem;}
+.card-title{font-size:0.63rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;
+  border-bottom:1px solid var(--border);padding-bottom:0.45rem;margin-bottom:0.9rem;}
+.video-wrap{position:relative;width:100%;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.video-wrap::before,.video-wrap::after{content:'';position:absolute;width:18px;height:18px;
+  border-color:var(--accent);border-style:solid;z-index:10;}
+.video-wrap::before{top:7px;left:7px;border-width:2px 0 0 2px;}
+.video-wrap::after{bottom:7px;right:7px;border-width:0 2px 2px 0;}
+video,canvas{display:block;width:100%;height:auto;}
+canvas{position:absolute;top:0;left:0;}
+.controls{display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:0.8rem;align-items:center;}
+button{font-family:'Courier New',monospace;font-size:0.72rem;letter-spacing:0.07em;
+  padding:0.45rem 0.9rem;border-radius:5px;border:1px solid var(--accent);
+  background:transparent;color:var(--accent);cursor:pointer;transition:all 0.18s;text-transform:uppercase;}
+button:hover:not(:disabled){background:var(--accent);color:#000;}
+button:disabled{opacity:0.28;cursor:not-allowed;}
+button.red{border-color:var(--danger);color:var(--danger);}
+button.red:hover:not(:disabled){background:var(--danger);color:#fff;}
+.status{display:flex;align-items:center;gap:0.5rem;margin-top:0.6rem;font-size:0.68rem;color:var(--muted);}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.dot.on{background:var(--success);animation:blink 1.2s infinite;}
+.dot.spin{background:var(--accent);animation:blink 0.5s infinite;}
+.dot.err{background:var(--danger);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.15}}
+
+/* Classification badge */
+.classify-box{border:1px solid var(--border);border-radius:8px;padding:0.9rem;margin-bottom:0.8rem;
+  background:var(--surface2);}
+.classify-main{font-size:1.1rem;font-weight:bold;color:#fff;margin-bottom:0.3rem;}
+.classify-main .badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:0.75rem;margin-left:8px;vertical-align:middle;}
+.badge-human{background:rgba(0,212,255,0.15);color:var(--accent);border:1px solid var(--accent);}
+.badge-nonliving{background:rgba(255,71,87,0.15);color:var(--danger);border:1px solid var(--danger);}
+.classify-sub{font-size:0.72rem;color:var(--muted);margin-top:4px;}
+
+/* Stats grid */
+.stats4{display:grid;grid-template-columns:repeat(2,1fr);gap:0.5rem;margin-bottom:0.8rem;}
+.stat{background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:7px;
+  padding:0.65rem 0.8rem;text-align:center;}
+.stat .v{font-size:1.4rem;color:var(--accent);line-height:1.1;}
+.stat .l{font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:3px;}
+
+/* Expression bars */
+.expr-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.expr-name{font-size:0.68rem;color:var(--text);width:72px;flex-shrink:0;text-transform:capitalize;}
+.expr-bar-bg{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.expr-bar{height:5px;border-radius:3px;background:var(--accent2);transition:width 0.25s;}
+.expr-pct{font-size:0.65rem;color:var(--accent);width:34px;text-align:right;flex-shrink:0;}
+.expr-top{font-size:0.82rem;font-weight:bold;color:var(--success);margin-bottom:8px;}
+
+/* Face attributes */
+.attr-row{display:flex;justify-content:space-between;align-items:center;
+  padding:4px 0;border-bottom:1px solid var(--border);font-size:0.7rem;}
+.attr-row:last-child{border-bottom:none;}
+.attr-key{color:var(--muted);}
+.attr-val{color:var(--text);font-weight:bold;}
+.attr-val.hi{color:var(--accent);}
+.attr-val.ok{color:var(--success);}
+.attr-val.warn{color:var(--warn);}
+
+/* Log */
+.log{font-size:0.65rem;color:var(--muted);max-height:90px;overflow-y:auto;line-height:1.9;}
+.log .ok{color:var(--success);} .log .err{color:var(--danger);} .log .info{color:var(--text);}
+
+/* Upload */
+label.upload{cursor:pointer;font-family:'Courier New',monospace;font-size:0.72rem;letter-spacing:0.07em;
+  padding:0.45rem 0.9rem;border-radius:5px;border:1px solid var(--accent2);color:var(--accent2);
+  text-transform:uppercase;transition:all 0.18s;display:inline-block;}
+label.upload:hover{background:var(--accent2);color:#fff;}
+#imgCanvas{display:none;width:100%;border-radius:8px;border:1px solid var(--border);margin-top:0.75rem;}
+
+.no-face{font-size:0.72rem;color:var(--muted);text-align:center;padding:1rem 0;}
+
+/* Confidence meter */
+.conf-ring{display:flex;align-items:center;gap:10px;margin-bottom:0.8rem;}
+.conf-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;}
+.conf-val{font-size:1.1rem;color:var(--accent);}
 </style>
 </head>
 <body>
 
-<div class="tag">// Task 5 · Computer Vision</div>
-<h1>Face <span>Detection</span> & Recognition</h1>
+<header>
+  <div class="tag">// Task 5 · AI Vision System</div>
+  <h1>Face <span>Detection</span> & Full Analysis</h1>
+</header>
 
-<div class="card">
-  <div class="card-title">▶ Live Camera</div>
-  <div class="video-wrap">
-    <video id="video" autoplay muted playsinline></video>
-    <canvas id="overlay"></canvas>
+<div class="layout">
+  <!-- LEFT: camera -->
+  <div>
+    <div class="card">
+      <div class="card-title">▶ Live Camera Feed</div>
+      <div class="video-wrap">
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+      </div>
+      <div class="controls">
+        <button id="btnStart">▶ Start Camera</button>
+        <button id="btnStop" class="red" disabled>■ Stop</button>
+        <button id="btnCap" disabled>⬇ Capture</button>
+      </div>
+      <div class="status">
+        <div class="dot spin" id="dot"></div>
+        <span id="statusTx">Loading AI models…</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">▶ Detect from Image</div>
+      <div class="controls">
+        <label class="upload" for="imgInput">⬆ Upload Image</label>
+        <input type="file" id="imgInput" accept="image/*" style="display:none"/>
+      </div>
+      <canvas id="imgCanvas"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">▶ System Log</div>
+      <div class="log" id="log"></div>
+    </div>
   </div>
-  <div class="controls">
-    <button id="btnStart">▶ Start Camera</button>
-    <button id="btnStop" class="red" disabled>■ Stop</button>
-    <button id="btnCap" disabled>⬇ Capture</button>
-  </div>
-  <div class="status">
-    <div class="dot spin" id="dot"></div>
-    <span id="statusTx">Loading TensorFlow models…</span>
+
+  <!-- RIGHT: analysis panel -->
+  <div>
+    <div class="card">
+      <div class="card-title">▶ Classification</div>
+      <div id="classifyBox">
+        <div class="no-face">Start camera to begin analysis…</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">▶ Detection Stats</div>
+      <div class="stats4">
+        <div class="stat"><div class="v" id="sFaces">0</div><div class="l">Faces</div></div>
+        <div class="stat"><div class="v" id="sFps">0</div><div class="l">FPS</div></div>
+        <div class="stat"><div class="v" id="sAge">—</div><div class="l">Est. Age</div></div>
+        <div class="stat"><div class="v" id="sGender">—</div><div class="l">Gender</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">▶ Facial Expressions</div>
+      <div id="exprPanel"><div class="no-face">Waiting for face…</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">▶ Face Attributes</div>
+      <div id="attrPanel"><div class="no-face">Waiting for face…</div></div>
+    </div>
   </div>
 </div>
 
-<div class="card">
-  <div class="card-title">▶ Stats</div>
-  <div class="stats">
-    <div class="stat"><div class="v" id="sFaces">0</div><div class="l">Faces Detected</div></div>
-    <div class="stat"><div class="v" id="sFps">0</div><div class="l">FPS</div></div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title">▶ Detect from Image</div>
-  <div class="controls">
-    <label class="upload" for="imgInput">⬆ Upload Image</label>
-    <input type="file" id="imgInput" accept="image/*" style="display:none"/>
-  </div>
-  <canvas id="imgCanvas"></canvas>
-</div>
-
-<div class="card">
-  <div class="card-title">▶ System Log</div>
-  <div class="log" id="log"></div>
-</div>
-
+<!-- TF + BlazeFace for detection/landmarks -->
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.0.7/dist/blazeface.min.js"></script>
+<!-- face-api for expressions/age/gender (loaded from jsDelivr which works) -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
 <script>
 const video   = document.getElementById('video');
 const overlay = document.getElementById('overlay');
@@ -116,49 +191,67 @@ const btnStop = document.getElementById('btnStop');
 const btnCap  = document.getElementById('btnCap');
 const logEl   = document.getElementById('log');
 
-let model=null, stream=null, rafId=null;
-let fpsCounter=0, lastFpsTime=Date.now();
+let blazeModel=null, faceApiReady=false;
+let stream=null, rafId=null;
+let fps=0, fpsLast=Date.now(), fpsCount=0;
+
+// Expression emoji map
+const EXPR_EMOJI={happy:'😊',sad:'😢',angry:'😠',fearful:'😨',disgusted:'🤢',surprised:'😲',neutral:'😐'};
+const EXPR_COLOR={happy:'#00e676',sad:'#0077ff',angry:'#ff4757',fearful:'#9c27b0',
+  disgusted:'#ff9800',surprised:'#ffeb3b',neutral:'#78909c'};
 
 function log(msg,cls='info'){
   const d=document.createElement('div');
-  d.className=cls;
-  d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
+  d.className=cls; d.textContent=`[${new Date().toLocaleTimeString()}] ${msg}`;
   logEl.prepend(d);
 }
-function setStatus(msg,state=''){
-  stTx.textContent=msg;
-  dot.className='dot '+state;
+function setStatus(msg,state=''){stTx.textContent=msg;dot.className='dot '+state;}
+
+// ── Load models ──────────────────────────────────────────────────────────────
+const FACEAPI_CDN='https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/weights';
+
+async function loadModels(){
+  setStatus('Loading BlazeFace…','spin');
+  log('Loading BlazeFace (detection)…');
+  try{
+    blazeModel=await blazeface.load();
+    log('BlazeFace ready.','ok');
+  }catch(e){log('BlazeFace error: '+e.message,'err');}
+
+  setStatus('Loading expression/age/gender models…','spin');
+  log('Loading face-api models (expressions, age, gender)…');
+  try{
+    await Promise.all([
+      faceapi.nets.tinyFaceDetector.loadFromUri(FACEAPI_CDN),
+      faceapi.nets.faceExpressionNet.loadFromUri(FACEAPI_CDN),
+      faceapi.nets.ageGenderNet.loadFromUri(FACEAPI_CDN),
+      faceapi.nets.faceLandmark68Net.loadFromUri(FACEAPI_CDN),
+    ]);
+    faceApiReady=true;
+    log('Expression + Age/Gender models ready.','ok');
+  }catch(e){
+    log('face-api models failed (expressions/age/gender unavailable): '+e.message,'err');
+  }
+
+  setStatus('Ready — click Start Camera','');
+  btnStart.disabled=false;
 }
 
-// Load BlazeFace model
-(async()=>{
-  try{
-    log('Loading BlazeFace model from CDN…');
-    model = await blazeface.load();
-    setStatus('Model ready — click Start Camera','');
-    btnStart.disabled=false;
-    log('Model loaded successfully.','ok');
-  }catch(e){
-    setStatus('Model load failed','err');
-    log('Error: '+e.message,'err');
-  }
-})();
+loadModels();
 
-btnStart.addEventListener('click', async()=>{
-  if(!model){log('Model not ready yet','err');return;}
+// ── Camera ───────────────────────────────────────────────────────────────────
+btnStart.addEventListener('click',async()=>{
   try{
-    stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+    stream=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
     video.srcObject=stream;
     await video.play();
-    btnStart.disabled=true;
-    btnStop.disabled=false;
-    btnCap.disabled=false;
-    setStatus('Camera active — detecting faces','on');
+    btnStart.disabled=true; btnStop.disabled=false; btnCap.disabled=false;
+    setStatus('Camera active','on');
     log('Camera started.','ok');
-    detect();
+    detectLoop();
   }catch(e){
     setStatus('Camera error','err');
-    log('Camera error: '+e.message+'. Make sure you allow camera permission.','err');
+    log('Camera: '+e.message,'err');
   }
 });
 
@@ -166,12 +259,9 @@ btnStop.addEventListener('click',()=>{
   cancelAnimationFrame(rafId);
   if(stream) stream.getTracks().forEach(t=>t.stop());
   ctx.clearRect(0,0,overlay.width,overlay.height);
-  btnStart.disabled=false;
-  btnStop.disabled=true;
-  btnCap.disabled=true;
-  setStatus('Camera stopped','');
-  document.getElementById('sFaces').textContent='0';
-  document.getElementById('sFps').textContent='0';
+  btnStart.disabled=false; btnStop.disabled=true; btnCap.disabled=true;
+  setStatus('Stopped','');
+  resetPanels();
   log('Camera stopped.');
 });
 
@@ -180,111 +270,240 @@ btnCap.addEventListener('click',()=>{
   c.width=video.videoWidth; c.height=video.videoHeight;
   c.getContext('2d').drawImage(video,0,0);
   const a=document.createElement('a');
-  a.href=c.toDataURL('image/png');
-  a.download='face_capture_'+Date.now()+'.png';
-  a.click();
-  log('Frame captured.','ok');
+  a.href=c.toDataURL('image/png'); a.download='face_'+Date.now()+'.png'; a.click();
+  log('Captured.','ok');
 });
 
-const COLORS=['#00d4ff','#00e676','#ffeb3b','#ff6b9d'];
+function resetPanels(){
+  ['sFaces','sFps','sAge','sGender'].forEach(id=>document.getElementById(id).textContent='—');
+  document.getElementById('classifyBox').innerHTML='<div class="no-face">Start camera to begin…</div>';
+  document.getElementById('exprPanel').innerHTML='<div class="no-face">Waiting for face…</div>';
+  document.getElementById('attrPanel').innerHTML='<div class="no-face">Waiting for face…</div>';
+}
 
-async function detect(){
+// ── Main detection loop ───────────────────────────────────────────────────────
+async function detectLoop(){
   if(!stream) return;
   overlay.width=video.videoWidth||640;
   overlay.height=video.videoHeight||480;
 
-  const predictions = await model.estimateFaces(video, false);
-  ctx.clearRect(0,0,overlay.width,overlay.height);
-
-  document.getElementById('sFaces').textContent=predictions.length;
-
-  predictions.forEach((p,i)=>{
-    const [x1,y1]=p.topLeft;
-    const [x2,y2]=p.bottomRight;
-    const w=x2-x1, h=y2-y1;
-    const col=COLORS[i%COLORS.length];
-    const prob=(p.probability[0]*100).toFixed(0);
-
-    // box
-    ctx.strokeStyle=col;
-    ctx.lineWidth=2;
-    ctx.strokeRect(x1,y1,w,h);
-
-    // corner brackets
-    const cs=16;
-    ctx.strokeStyle='#fff';
-    ctx.lineWidth=2.5;
-    [[x1,y1,1,1],[x2,y1,-1,1],[x1,y2,1,-1],[x2,y2,-1,-1]].forEach(([cx,cy,dx,dy])=>{
-      ctx.beginPath();
-      ctx.moveTo(cx+dx*cs,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+dy*cs);
-      ctx.stroke();
-    });
-
-    // label badge
-    const label=`FACE ${i+1} · ${prob}%`;
-    ctx.fillStyle=col;
-    ctx.fillRect(x1, y1-22, label.length*7.8+8, 20);
-    ctx.fillStyle='#000';
-    ctx.font='bold 12px "Courier New"';
-    ctx.fillText(label, x1+4, y1-6);
-
-    // landmarks (eyes, nose, mouth, ears)
-    if(p.landmarks){
-      p.landmarks.forEach(([lx,ly])=>{
-        ctx.beginPath();
-        ctx.arc(lx,ly,3,0,Math.PI*2);
-        ctx.fillStyle=col;
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(lx,ly,3,0,Math.PI*2);
-        ctx.strokeStyle='#000';
-        ctx.lineWidth=1;
-        ctx.stroke();
-      });
-    }
-  });
-
-  // FPS
-  fpsCounter++;
-  const now=Date.now();
-  if(now-lastFpsTime>=1000){
-    document.getElementById('sFps').textContent=fpsCounter;
-    fpsCounter=0;
-    lastFpsTime=now;
+  // BlazeFace detections
+  let blazePreds=[];
+  if(blazeModel){
+    try{ blazePreds=await blazeModel.estimateFaces(video,false); }catch(e){}
   }
 
-  rafId=requestAnimationFrame(detect);
+  // face-api detections (expressions, age, gender)
+  let faPreds=[];
+  if(faceApiReady){
+    try{
+      faPreds=await faceapi.detectAllFaces(video,
+        new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:0.4}))
+        .withFaceLandmarks().withFaceExpressions().withAgeAndGender();
+    }catch(e){}
+  }
+
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+  document.getElementById('sFaces').textContent=blazePreds.length;
+
+  // FPS
+  fpsCount++;
+  const now=Date.now();
+  if(now-fpsLast>=1000){fps=fpsCount;fpsCount=0;fpsLast=now;}
+  document.getElementById('sFps').textContent=fps;
+
+  // Draw BlazeFace boxes + landmarks
+  blazePreds.forEach((p,i)=>{
+    const [x1,y1]=p.topLeft,[x2,y2]=p.bottomRight;
+    const w=x2-x1,h=y2-y1;
+    drawFaceBox(ctx,x1,y1,w,h,'#00d4ff',`FACE ${i+1} · ${(p.probability[0]*100).toFixed(0)}%`);
+    if(p.landmarks) p.landmarks.forEach(([lx,ly])=>{
+      ctx.beginPath();ctx.arc(lx,ly,2.5,0,Math.PI*2);
+      ctx.fillStyle='#00d4ff';ctx.fill();
+    });
+  });
+
+  // Update panels from face-api
+  if(faPreds.length>0){
+    const r=faPreds[0];
+    const age=Math.round(r.age);
+    const gender=r.gender;
+    document.getElementById('sAge').textContent=age;
+    document.getElementById('sGender').textContent=gender==='male'?'♂ Male':'♀ Female';
+    updateClassifyPanel(age,gender,r.detection.score);
+    updateExprPanel(r.expressions);
+    updateAttrPanel(r,age,gender);
+  } else if(blazePreds.length>0){
+    // BlazeFace only — no age/gender
+    updateClassifyPanelBlaze(blazePreds.length);
+    document.getElementById('sAge').textContent='—';
+    document.getElementById('sGender').textContent='—';
+  } else {
+    // No face
+    document.getElementById('classifyBox').innerHTML=renderNoFace();
+    document.getElementById('exprPanel').innerHTML='<div class="no-face">No face detected</div>';
+    document.getElementById('attrPanel').innerHTML='<div class="no-face">No face detected</div>';
+    document.getElementById('sAge').textContent='—';
+    document.getElementById('sGender').textContent='—';
+  }
+
+  rafId=requestAnimationFrame(detectLoop);
 }
 
-// Image upload
+function drawFaceBox(ctx,x,y,w,h,col,label){
+  ctx.strokeStyle=col; ctx.lineWidth=2; ctx.strokeRect(x,y,w,h);
+  const cs=16;
+  ctx.strokeStyle='#fff'; ctx.lineWidth=2.5;
+  [[x,y,1,1],[x+w,y,-1,1],[x,y+h,1,-1],[x+w,y+h,-1,-1]].forEach(([cx,cy,dx,dy])=>{
+    ctx.beginPath();ctx.moveTo(cx+dx*cs,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx,cy+dy*cs);ctx.stroke();
+  });
+  ctx.fillStyle=col;ctx.fillRect(x,y-22,label.length*7.5+8,20);
+  ctx.fillStyle='#000';ctx.font='bold 11px "Courier New"';ctx.fillText(label,x+4,y-6);
+}
+
+// ── Panel renderers ───────────────────────────────────────────────────────────
+function renderNoFace(){
+  return `<div style="border:1px solid var(--danger);border-radius:8px;padding:0.8rem;background:rgba(255,71,87,0.06)">
+    <div class="classify-main">🔍 Non-Living / No Face <span class="badge badge-nonliving">NON-LIVING</span></div>
+    <div class="classify-sub">No human face detected in frame. Object or background visible.</div>
+  </div>`;
+}
+
+function updateClassifyPanel(age,gender,score){
+  const ageGroup = age<13?'Child':age<18?'Teenager':age<35?'Young Adult':age<55?'Adult':'Senior';
+  const gIcon=gender==='male'?'👨':'👩';
+  const gLabel=gender==='male'?'Male':'Female';
+  document.getElementById('classifyBox').innerHTML=`
+    <div class="classify-box" style="border-color:var(--accent)">
+      <div class="classify-main">
+        ${gIcon} Human — ${gLabel}
+        <span class="badge badge-human">LIVING · HUMAN</span>
+      </div>
+      <div class="classify-sub">Age group: ${ageGroup} · Estimated age: ~${age} yrs · Confidence: ${(score*100).toFixed(0)}%</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+      <div class="attr-row" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;">
+        <span class="attr-key">Category</span><span class="attr-val hi">Human</span>
+      </div>
+      <div class="attr-row" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;">
+        <span class="attr-key">Living</span><span class="attr-val ok">Yes ✓</span>
+      </div>
+      <div class="attr-row" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;">
+        <span class="attr-key">Gender</span><span class="attr-val hi">${gLabel}</span>
+      </div>
+      <div class="attr-row" style="border:1px solid var(--border);border-radius:6px;padding:6px 8px;">
+        <span class="attr-key">Age Group</span><span class="attr-val hi">${ageGroup}</span>
+      </div>
+    </div>`;
+}
+
+function updateClassifyPanelBlaze(count){
+  document.getElementById('classifyBox').innerHTML=`
+    <div class="classify-box" style="border-color:var(--accent)">
+      <div class="classify-main">👤 Human Face(s) Detected <span class="badge badge-human">LIVING · HUMAN</span></div>
+      <div class="classify-sub">${count} face(s) in frame. Load face-api models for age/gender details.</div>
+    </div>`;
+}
+
+function updateExprPanel(expressions){
+  const sorted=Object.entries(expressions).sort((a,b)=>b[1]-a[1]);
+  const top=sorted[0];
+  const emoji=EXPR_EMOJI[top[0]]||'😐';
+  let html=`<div class="expr-top">${emoji} Dominant: <span style="color:var(--accent)">${top[0].toUpperCase()}</span> (${(top[1]*100).toFixed(0)}%)</div>`;
+  sorted.forEach(([name,val])=>{
+    const pct=(val*100).toFixed(1);
+    const col=EXPR_COLOR[name]||'#78909c';
+    html+=`<div class="expr-row">
+      <div class="expr-name">${EXPR_EMOJI[name]||''} ${name}</div>
+      <div class="expr-bar-bg"><div class="expr-bar" style="width:${pct}%;background:${col}"></div></div>
+      <div class="expr-pct">${pct}%</div>
+    </div>`;
+  });
+  document.getElementById('exprPanel').innerHTML=html;
+}
+
+function updateAttrPanel(r,age,gender){
+  const exprs=r.expressions;
+  const topExpr=Object.entries(exprs).sort((a,b)=>b[1]-a[1])[0][0];
+  const box=r.detection.box;
+  const faceW=Math.round(box.width), faceH=Math.round(box.height);
+  const aspect=(faceW/faceH).toFixed(2);
+
+  // Infer face shape roughly from aspect ratio
+  const faceShape=aspect>0.85?'Round/Square':aspect>0.7?'Oval':'Narrow/Long';
+
+  // Rough pose estimation from landmark positions
+  let pose='Frontal';
+  if(r.landmarks){
+    const pts=r.landmarks.positions;
+    if(pts.length>=17){
+      const leftX=pts[0].x, rightX=pts[16].x, noseX=pts[30]?pts[30].x:(leftX+rightX)/2;
+      const center=(leftX+rightX)/2;
+      const offset=Math.abs(noseX-center)/(rightX-leftX)*100;
+      pose=offset<10?'Frontal':offset<20?'Slight Turn':offset<35?'Profile (side)':'Side View';
+    }
+  }
+
+  const moodMap={happy:'Positive 😊',sad:'Negative 😢',angry:'Agitated 😠',neutral:'Calm 😐',
+    surprised:'Alert 😲',fearful:'Anxious 😨',disgusted:'Averse 🤢'};
+  const mood=moodMap[topExpr]||'Neutral';
+
+  document.getElementById('attrPanel').innerHTML=`
+    <div class="attr-row"><span class="attr-key">Species</span><span class="attr-val ok">Human</span></div>
+    <div class="attr-row"><span class="attr-key">Living Being</span><span class="attr-val ok">Yes ✓</span></div>
+    <div class="attr-row"><span class="attr-key">Gender</span><span class="attr-val hi">${gender==='male'?'♂ Male':'♀ Female'}</span></div>
+    <div class="attr-row"><span class="attr-key">Estimated Age</span><span class="attr-val hi">~${age} years</span></div>
+    <div class="attr-row"><span class="attr-key">Expression</span><span class="attr-val hi">${EXPR_EMOJI[topExpr]||''} ${topExpr}</span></div>
+    <div class="attr-row"><span class="attr-key">Mood</span><span class="attr-val">${mood}</span></div>
+    <div class="attr-row"><span class="attr-key">Face Shape</span><span class="attr-val">${faceShape}</span></div>
+    <div class="attr-row"><span class="attr-key">Head Pose</span><span class="attr-val">${pose}</span></div>
+    <div class="attr-row"><span class="attr-key">Face Size</span><span class="attr-val">${faceW} × ${faceH} px</span></div>
+    <div class="attr-row"><span class="attr-key">Detect Confidence</span><span class="attr-val hi">${(r.detection.score*100).toFixed(1)}%</span></div>
+  `;
+}
+
+// ── Image upload ──────────────────────────────────────────────────────────────
 document.getElementById('imgInput').addEventListener('change',async e=>{
   const file=e.target.files[0];
-  if(!file||!model) return;
+  if(!file) return;
   const url=URL.createObjectURL(file);
   const img=new Image();
   img.src=url;
   img.onload=async()=>{
     const ic=document.getElementById('imgCanvas');
-    ic.width=img.naturalWidth; ic.height=img.naturalHeight;
-    ic.style.display='block';
+    ic.width=img.naturalWidth; ic.height=img.naturalHeight; ic.style.display='block';
     const c=ic.getContext('2d');
     c.drawImage(img,0,0);
-    log(`Analysing ${file.name}…`);
-    const preds=await model.estimateFaces(img,false);
-    log(`Found ${preds.length} face(s).`,preds.length>0?'ok':'info');
-    preds.forEach((p,i)=>{
-      const [x1,y1]=p.topLeft;
-      const [x2,y2]=p.bottomRight;
-      const w=x2-x1,h=y2-y1;
-      const col=COLORS[i%COLORS.length];
-      c.strokeStyle=col; c.lineWidth=3; c.strokeRect(x1,y1,w,h);
-      const label=`FACE ${i+1} · ${(p.probability[0]*100).toFixed(0)}%`;
-      c.fillStyle=col; c.fillRect(x1,y1-24,label.length*8+8,22);
-      c.fillStyle='#000'; c.font='bold 13px monospace'; c.fillText(label,x1+4,y1-6);
-      if(p.landmarks) p.landmarks.forEach(([lx,ly])=>{
-        c.beginPath(); c.arc(lx,ly,4,0,Math.PI*2); c.fillStyle=col; c.fill();
+    log(`Analysing image: ${file.name}`);
+
+    // BlazeFace
+    if(blazeModel){
+      const preds=await blazeModel.estimateFaces(img,false);
+      log(`BlazeFace: ${preds.length} face(s).`,preds.length>0?'ok':'info');
+      preds.forEach((p,i)=>{
+        const [x1,y1]=p.topLeft,[x2,y2]=p.bottomRight;
+        const w=x2-x1,h=y2-y1;
+        drawFaceBox(c,x1,y1,w,h,'#00d4ff',`FACE ${i+1} · ${(p.probability[0]*100).toFixed(0)}%`);
+        if(p.landmarks) p.landmarks.forEach(([lx,ly])=>{
+          c.beginPath();c.arc(lx,ly,3,0,Math.PI*2);c.fillStyle='rgba(0,212,255,0.8)';c.fill();
+        });
       });
-    });
+    }
+
+    // face-api
+    if(faceApiReady){
+      const preds=await faceapi.detectAllFaces(img,
+        new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:0.4}))
+        .withFaceLandmarks().withFaceExpressions().withAgeAndGender();
+      preds.forEach(r=>{
+        const {x,y,width:w,height:h}=r.detection.box;
+        const topExpr=Object.entries(r.expressions).sort((a,b)=>b[1]-a[1])[0][0];
+        const lbl=`${r.gender==='male'?'♂':'♀'} ~${Math.round(r.age)}y · ${topExpr}`;
+        c.strokeStyle='#00e676';c.lineWidth=2;c.strokeRect(x,y,w,h);
+        c.fillStyle='#00e676';c.fillRect(x,y+h,lbl.length*7.5+8,20);
+        c.fillStyle='#000';c.font='bold 11px "Courier New"';c.fillText(lbl,x+4,y+h+14);
+      });
+    }
     URL.revokeObjectURL(url);
   };
 });
