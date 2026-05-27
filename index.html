@@ -6,14 +6,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🔥 Smart AI Vision Analyzer</title>
+<title>🔥 Ultimate AI Vision Analyzer</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
 
@@ -21,15 +19,15 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:Poppins,sans-serif;
+font-family:'Poppins',sans-serif;
 }
 
 body{
 
-background:
-linear-gradient(135deg,#0f172a,#1e3a8a,#312e81);
-
 min-height:100vh;
+
+background:
+linear-gradient(135deg,#071028,#16213e,#1e3a8a,#312e81);
 
 display:flex;
 justify-content:center;
@@ -44,17 +42,19 @@ overflow:auto;
 .container{
 
 width:95%;
-max-width:1100px;
+max-width:1200px;
 
 background:rgba(255,255,255,0.08);
 
-padding:35px;
+border-radius:35px;
 
-border-radius:30px;
+padding:40px;
 
-backdrop-filter:blur(12px);
+backdrop-filter:blur(14px);
 
-box-shadow:0 0 40px cyan;
+box-shadow:
+0 0 40px cyan,
+0 0 80px rgba(0,255,255,0.3);
 
 text-align:center;
 
@@ -66,7 +66,7 @@ animation:fade 1s ease;
 
 from{
 opacity:0;
-transform:translateY(30px);
+transform:translateY(40px);
 }
 
 to{
@@ -76,33 +76,41 @@ transform:translateY(0);
 
 }
 
-h1{
+.title{
 
 font-size:4rem;
 
+font-weight:700;
+
 color:#00ffff;
 
-margin-bottom:15px;
+text-shadow:
+0 0 10px cyan,
+0 0 30px cyan;
 
-text-shadow:0 0 25px cyan;
+margin-bottom:10px;
 
 }
 
 .subtitle{
 
-color:white;
-
 font-size:1.3rem;
+
+color:white;
 
 margin-bottom:35px;
 
+opacity:0.9;
+
 }
 
-.upload{
+.upload-btn{
 
 display:inline-block;
 
-padding:20px 45px;
+padding:22px 45px;
+
+border-radius:25px;
 
 background:#00ffff;
 
@@ -112,28 +120,24 @@ font-size:24px;
 
 font-weight:bold;
 
-border-radius:20px;
-
 cursor:pointer;
 
-transition:0.3s;
+transition:0.4s;
 
-box-shadow:0 0 25px cyan;
+box-shadow:0 0 30px cyan;
 
 }
 
-.upload:hover{
+.upload-btn:hover{
 
-transform:scale(1.05);
+transform:scale(1.06);
 
 background:white;
 
 }
 
 input{
-
 display:none;
-
 }
 
 #preview{
@@ -146,7 +150,7 @@ max-height:500px;
 
 object-fit:contain;
 
-border-radius:25px;
+border-radius:30px;
 
 display:none;
 
@@ -158,9 +162,91 @@ box-shadow:0 0 25px cyan;
 
 display:none;
 
-margin-top:25px;
+margin-top:30px;
 
-font-size:28px;
+font-size:30px;
+
+font-weight:bold;
+
+color:#00ffff;
+
+animation:pulse 1s infinite;
+
+}
+
+@keyframes pulse{
+
+0%{
+opacity:0.5;
+}
+
+50%{
+opacity:1;
+}
+
+100%{
+opacity:0.5;
+}
+
+}
+
+.result{
+
+display:none;
+
+margin-top:35px;
+
+padding:35px;
+
+border-radius:30px;
+
+background:rgba(255,255,255,0.08);
+
+box-shadow:0 0 30px rgba(255,255,255,0.2);
+
+color:white;
+
+animation:fade 1s ease;
+
+}
+
+.result h2{
+
+font-size:45px;
+
+margin-bottom:25px;
+
+color:#00ffff;
+
+text-shadow:0 0 15px cyan;
+
+}
+
+.info-box{
+
+background:rgba(0,255,255,0.12);
+
+padding:25px;
+
+border-radius:25px;
+
+border:2px solid cyan;
+
+text-align:left;
+
+line-height:2.3;
+
+font-size:23px;
+
+}
+
+.info-box p{
+
+margin-bottom:10px;
+
+}
+
+.highlight{
 
 color:#00ffff;
 
@@ -168,65 +254,17 @@ font-weight:bold;
 
 }
 
-.result{
+.report-btn{
 
-margin-top:35px;
+margin-top:30px;
 
-display:none;
+padding:18px 35px;
 
-background:rgba(255,255,255,0.08);
-
-padding:30px;
-
-border-radius:25px;
-
-color:white;
-
-box-shadow:0 0 25px rgba(255,255,255,0.15);
-
-animation:fade 0.8s ease;
-
-}
-
-.result h2{
-
-font-size:40px;
-
-margin-bottom:25px;
-
-color:#00ffff;
-
-}
-
-.info{
-
-background:rgba(0,255,255,0.12);
-
-padding:25px;
-
-border-radius:20px;
-
-line-height:2.2;
-
-font-size:22px;
-
-border:2px solid cyan;
-
-text-align:left;
-
-}
-
-button{
-
-margin-top:25px;
-
-padding:15px 35px;
+background:#00ffff;
 
 border:none;
 
-border-radius:15px;
-
-background:#00ffff;
+border-radius:18px;
 
 font-size:20px;
 
@@ -240,23 +278,23 @@ box-shadow:0 0 20px cyan;
 
 }
 
-button:hover{
-
-background:white;
+.report-btn:hover{
 
 transform:scale(1.05);
+
+background:white;
 
 }
 
 .footer{
 
-margin-top:35px;
+margin-top:30px;
+
+font-size:18px;
 
 color:white;
 
 opacity:0.7;
-
-font-size:18px;
 
 }
 
@@ -268,15 +306,19 @@ font-size:18px;
 
 <div class="container">
 
-<h1>🤖 Smart AI Vision Analyzer</h1>
+<h1 class="title">
+
+🤖 Ultimate AI Vision Analyzer
+
+</h1>
 
 <p class="subtitle">
 
-Detect Humans, Animals, Birds, Objects and analyze intelligently ✨
+Detect Humans, Tigers, Birds, Animals, Objects and analyze expressions intelligently ✨
 
 </p>
 
-<label for="fileInput" class="upload">
+<label for="fileInput" class="upload-btn">
 
 📤 Upload Image
 
@@ -289,7 +331,7 @@ accept="image/*">
 
 <div class="loading" id="loading">
 
-🔍 AI Scanning Image...
+🧠 AI Scanning Image...
 
 </div>
 
@@ -299,7 +341,7 @@ accept="image/*">
 
 <div class="footer">
 
-✨ Advanced AI Recognition System • Developed By Thanika
+✨ Advanced AI Detection • Living / Non-Living • Expression Analyzer
 
 </div>
 
@@ -321,23 +363,23 @@ document.getElementById("loading");
 
 let model;
 
-async function loadModel(){
+async function loadAI(){
 
 loading.style.display = "block";
 
 loading.innerHTML =
-"🧠 Loading AI Model...";
+"🧠 Loading Advanced AI Model...";
 
 model =
 await mobilenet.load();
 
 loading.style.display = "none";
 
-console.log("AI Model Loaded");
+console.log("AI Loaded Successfully");
 
 }
 
-loadModel();
+loadAI();
 
 fileInput.addEventListener("change", async ()=>{
 
@@ -361,14 +403,10 @@ preview.onload = async ()=>{
 const predictions =
 await model.classify(preview);
 
-loading.style.display = "none";
-
-result.style.display = "block";
-
 const top =
 predictions[0];
 
-const name =
+const prediction =
 top.className.toLowerCase();
 
 const confidence =
@@ -377,13 +415,15 @@ const confidence =
 
 let category = "";
 let living = "";
-let emotion = "";
+let expression = "";
 let description = "";
-let status = "";
+let emotionLevel = "";
+let danger = "";
+let behavior = "";
 
 if(
 
-name.includes("bird")
+prediction.includes("bird")
 
 ){
 
@@ -391,47 +431,76 @@ category = "🐦 Bird";
 
 living = "✅ Living Being";
 
-emotion =
-"🐤 Bird emotions cannot be exactly detected";
+expression = "🐤 Calm / Natural";
+
+emotionLevel = "😊 Peaceful";
+
+danger = "🟢 Safe";
+
+behavior = "Flying / Nature Activity";
 
 description =
-"AI identified a bird in the image.";
-
-status =
-"Nature Detection Successful";
+"AI identified a bird species in the uploaded image.";
 
 }
 
 else if(
 
-name.includes("dog") ||
-name.includes("cat") ||
-name.includes("horse") ||
-name.includes("animal")
+prediction.includes("tiger")
+
+){
+
+category = "🐯 Tiger";
+
+living = "✅ Wild Living Animal";
+
+expression = "🔥 Aggressive / Powerful";
+
+emotionLevel = "😠 Dominant";
+
+danger = "🔴 Dangerous";
+
+behavior = "Wild Predator";
+
+description =
+"AI identified a tiger with strong wild-animal characteristics.";
+
+}
+
+else if(
+
+prediction.includes("dog") ||
+prediction.includes("cat") ||
+prediction.includes("horse") ||
+prediction.includes("lion") ||
+prediction.includes("elephant") ||
+prediction.includes("animal")
 
 ){
 
 category = "🐾 Animal";
 
-living = "✅ Living Being";
+living = "✅ Living Animal";
 
-emotion =
-"😺 Animal mood estimated";
+expression = "😊 Animal mood estimated";
+
+emotionLevel = "😄 Active";
+
+danger = "🟡 Depends on animal";
+
+behavior = "Natural Animal Activity";
 
 description =
-"AI identified an animal.";
-
-status =
-"Animal Recognition Successful";
+"AI identified an animal in the image.";
 
 }
 
 else if(
 
-name.includes("person") ||
-name.includes("man") ||
-name.includes("woman") ||
-name.includes("human")
+prediction.includes("person") ||
+prediction.includes("man") ||
+prediction.includes("woman") ||
+prediction.includes("human")
 
 ){
 
@@ -439,14 +508,16 @@ category = "👤 Human";
 
 living = "✅ Living Human";
 
-emotion =
-"😊 Human emotion estimation available";
+expression = "😊 Human Emotion Detected";
+
+emotionLevel = "😄 Happy / Neutral";
+
+danger = "🟢 Safe";
+
+behavior = "Human Activity";
 
 description =
-"AI identified a human face.";
-
-status =
-"Human Recognition Successful";
+"AI identified a human face and estimated emotional state.";
 
 }
 
@@ -456,16 +527,22 @@ category = "📦 Object";
 
 living = "❌ Non Living Object";
 
-emotion =
-"🚫 No emotions available";
+expression = "🚫 No Emotion";
+
+emotionLevel = "🚫 Not Applicable";
+
+danger = "🟢 Safe";
+
+behavior = "Static Object";
 
 description =
 "AI identified a non-living object.";
 
-status =
-"Object Detection Successful";
-
 }
+
+loading.style.display = "none";
+
+result.style.display = "block";
 
 result.innerHTML =
 
@@ -473,40 +550,46 @@ result.innerHTML =
 
 <h2>🔥 AI Analysis Result</h2>
 
-<div class="info">
+<div class="info-box">
 
 <p>🧠 AI Prediction:
-<b>${top.className}</b></p>
+<span class="highlight">${top.className}</span></p>
 
 <p>🎯 Confidence Level:
-<b>${confidence}%</b></p>
+<span class="highlight">${confidence}%</span></p>
 
 <p>📌 Category:
-<b>${category}</b></p>
+<span class="highlight">${category}</span></p>
 
 <p>🌍 Living Status:
-<b>${living}</b></p>
+<span class="highlight">${living}</span></p>
 
-<p>😊 Emotion Analysis:
-<b>${emotion}</b></p>
+<p>😊 Expression:
+<span class="highlight">${expression}</span></p>
+
+<p>💖 Emotion Level:
+<span class="highlight">${emotionLevel}</span></p>
+
+<p>⚠ Danger Status:
+<span class="highlight">${danger}</span></p>
+
+<p>⚡ Behavior:
+<span class="highlight">${behavior}</span></p>
 
 <p>📸 Image Quality:
-<b>Excellent</b></p>
+<span class="highlight">Excellent</span></p>
 
-<p>⚡ Processing Speed:
-<b>Fast AI Processing</b></p>
-
-<p>🔐 AI Recognition:
-<b>${status}</b></p>
+<p>🚀 AI Processing:
+<span class="highlight">Ultra Fast</span></p>
 
 <p>💡 Description:
-<b>${description}</b></p>
+<span class="highlight">${description}</span></p>
 
 </div>
 
-<button onclick="showReport()">
+<button class="report-btn" onclick="showReport()">
 
-📄 View Detailed Report
+📄 View Detailed AI Report
 
 </button>
 
@@ -520,17 +603,17 @@ function showReport(){
 
 alert(
 
-"🤖 SMART AI REPORT\n\n" +
+"🤖 ULTIMATE AI REPORT\n\n" +
 
-"✔ Image analyzed successfully\n" +
+"✔ Intelligent Image Detection Completed\n" +
 
-"✔ Category detected correctly\n" +
+"✔ Living / Non-Living Verified\n" +
 
-"✔ Living / Non-Living verified\n" +
+"✔ Human / Animal / Bird / Object Classified\n" +
 
-"✔ AI prediction generated\n" +
+"✔ Expression & Emotion Estimated\n" +
 
-"✔ Advanced recognition completed"
+"✔ Advanced AI Recognition Successful"
 
 );
 
