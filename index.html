@@ -33,8 +33,6 @@ display:flex;
 justify-content:center;
 align-items:flex-start;
 
-overflow:auto;
-
 }
 
 .container{
@@ -329,6 +327,7 @@ let category = "";
 let living = "";
 let emotion = "";
 let description = "";
+let details = "";
 
 if(
 
@@ -350,7 +349,10 @@ emotion =
 "🐤 Calm / Natural";
 
 description =
-"AI identified a bird-like image.";
+"This image appears to contain a bird or bird-like structure.";
+
+details =
+"Birds are warm-blooded living creatures with feathers, wings and beaks. The AI detected features similar to bird anatomy.";
 
 }
 
@@ -371,7 +373,31 @@ emotion =
 "😊 Human Emotion Estimated";
 
 description =
-"AI identified a human.";
+"This image contains a human face or human body.";
+
+details =
+"Humans are highly intelligent living beings. AI detected human facial/body patterns from the uploaded image.";
+
+}
+
+else if(
+
+name.includes("tiger")
+
+){
+
+category = "🐯 Tiger";
+
+living = "✅ Wild Animal";
+
+emotion =
+"🔥 Aggressive / Powerful";
+
+description =
+"This image appears to contain a tiger.";
+
+details =
+"Tigers are powerful wild animals belonging to the cat family. AI recognized tiger-like fur/body patterns.";
 
 }
 
@@ -381,7 +407,7 @@ name.includes("dog") ||
 name.includes("cat") ||
 name.includes("lion") ||
 name.includes("horse") ||
-name.includes("tiger")
+name.includes("animal")
 
 ){
 
@@ -390,10 +416,13 @@ category = "🐾 Animal";
 living = "✅ Living Animal";
 
 emotion =
-"😺 Animal Mood Estimated";
+"😺 Natural Animal Emotion";
 
 description =
-"AI identified an animal.";
+"This image contains an animal.";
+
+details =
+"Animals are living organisms capable of movement and behavior. AI detected animal-like visual patterns.";
 
 }
 
@@ -407,7 +436,10 @@ emotion =
 "🚫 No Emotion";
 
 description =
-"AI identified an object.";
+"This image contains a non-living object.";
+
+details =
+"The uploaded image appears to be an object or artificial item instead of a living being.";
 
 }
 
@@ -442,6 +474,9 @@ result.innerHTML =
 
 <p>💡 Description:
 <b>${description}</b></p>
+
+<p>📘 Detailed Analysis:
+<b>${details}</b></p>
 
 <p>⚡ AI Recognition:
 <b>Successful</b></p>
