@@ -1,70 +1,781 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Face Detection</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI FACE DETECTION & RECOGNITION SYSTEM</title>
 
-  <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
-  <script defer src="script.js"></script>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-  <style>
-    body{
-      margin:0;
-      background:#0f172a;
-      color:white;
-      font-family:Arial;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
-      overflow:hidden;
+<!-- Face API -->
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:#050816;
+    overflow-x:hidden;
+    color:white;
+}
+
+/* Animated Background */
+body::before{
+    content:'';
+    position:fixed;
+    width:200%;
+    height:200%;
+    top:-50%;
+    left:-50%;
+    background:
+        radial-gradient(circle,#00ffff33 2px,transparent 2px),
+        radial-gradient(circle,#9d00ff22 2px,transparent 2px);
+    background-size:60px 60px;
+    animation:bgMove 30s linear infinite;
+    z-index:-2;
+}
+
+@keyframes bgMove{
+    0%{transform:translate(0,0);}
+    100%{transform:translate(100px,100px);}
+}
+
+.overlay{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle at top,#0d1b3d,#050816);
+    z-index:-1;
+}
+
+header{
+    text-align:center;
+    padding:30px 20px;
+    animation:fadeIn 2s ease;
+}
+
+header h1{
+    font-family:'Orbitron',sans-serif;
+    font-size:3rem;
+    background:linear-gradient(90deg,#00f7ff,#9d00ff);
+    -webkit-background-clip:text;
+    color:transparent;
+    text-shadow:0 0 20px #00ffff88;
+}
+
+header p{
+    margin-top:10px;
+    color:#c5c5c5;
+    letter-spacing:2px;
+}
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(-30px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+.dashboard{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    padding:20px;
+    max-width:1400px;
+    margin:auto;
+}
+
+.card{
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    backdrop-filter:blur(12px);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 0 20px rgba(0,255,255,0.15);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 0 30px rgba(0,255,255,0.35);
+}
+
+.card h3{
+    color:#00ffff;
+    margin-bottom:10px;
+}
+
+.card span{
+    font-size:2rem;
+    font-weight:bold;
+}
+
+.main{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:30px;
+    padding:30px;
+}
+
+.video-container{
+    position:relative;
+    width:850px;
+    max-width:95%;
+    border-radius:25px;
+    overflow:hidden;
+    background:#111;
+    box-shadow:0 0 40px rgba(0,255,255,0.25);
+}
+
+video,canvas{
+    width:100%;
+    border-radius:25px;
+}
+
+canvas{
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+.scan-line{
+    position:absolute;
+    width:100%;
+    height:4px;
+    background:linear-gradient(90deg,transparent,#00ffff,transparent);
+    box-shadow:0 0 20px #00ffff;
+    animation:scan 3s linear infinite;
+    z-index:20;
+}
+
+@keyframes scan{
+    0%{top:0;}
+    100%{top:100%;}
+}
+
+.controls{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:15px;
+    padding:20px;
+}
+
+button,label{
+    padding:14px 22px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(45deg,#00f7ff,#9d00ff);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+    font-family:'Orbitron';
+    letter-spacing:1px;
+    box-shadow:0 0 15px rgba(0,255,255,0.4);
+}
+
+button:hover,label:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 25px rgba(0,255,255,0.8);
+}
+
+input[type="file"]{
+    display:none;
+}
+
+.side-panel{
+    width:350px;
+    max-width:95%;
+}
+
+.drag-drop{
+    border:2px dashed #00ffff88;
+    padding:30px;
+    border-radius:20px;
+    text-align:center;
+    margin-bottom:20px;
+    background:rgba(255,255,255,0.04);
+}
+
+.drag-drop.dragover{
+    background:rgba(0,255,255,0.1);
+}
+
+.status{
+    padding:15px;
+    background:rgba(255,255,255,0.04);
+    border-radius:15px;
+    margin-top:20px;
+    line-height:1.8;
+}
+
+.loading-screen{
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:#050816;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    z-index:9999;
+}
+
+.loader{
+    width:120px;
+    height:120px;
+    border:6px solid transparent;
+    border-top:6px solid #00ffff;
+    border-bottom:6px solid #9d00ff;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+    box-shadow:0 0 30px #00ffff;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+.loading-screen h2{
+    margin-top:30px;
+    font-family:'Orbitron';
+    color:#00ffff;
+}
+
+footer{
+    text-align:center;
+    padding:30px;
+    color:#888;
+}
+
+.radar{
+    position:absolute;
+    top:20px;
+    right:20px;
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    border:2px solid rgba(0,255,255,0.3);
+    overflow:hidden;
+}
+
+.radar::before{
+    content:'';
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:conic-gradient(transparent,#00ffff);
+    animation:rotate 2s linear infinite;
+}
+
+@keyframes rotate{
+    100%{transform:rotate(360deg);}
+}
+
+@media(max-width:768px){
+    header h1{
+        font-size:2rem;
     }
-
-    .container{
-      text-align:center;
-      background:rgba(255,255,255,0.08);
-      padding:20px;
-      border-radius:20px;
-      box-shadow:0 0 20px rgba(0,255,255,0.3);
-    }
-
-    h1{
-      color:#00eaff;
-      margin-bottom:20px;
-    }
-
-    video{
-      border-radius:20px;
-      border:3px solid #00eaff;
-    }
-
-    canvas{
-      position:absolute;
-    }
-
-    .status{
-      margin-top:15px;
-      color:lime;
-      font-size:18px;
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>AI Face Detection System</h1>
+<div class="overlay"></div>
 
-  <div style="position:relative;">
-    <video id="video" width="720" height="560" autoplay muted></video>
-  </div>
-
-  <div class="status" id="status">
-    Loading AI Models...
-  </div>
+<div class="loading-screen" id="loadingScreen">
+    <div class="loader"></div>
+    <h2>Loading AI Models...</h2>
 </div>
+
+<header>
+    <h1>AI FACE DETECTION & RECOGNITION SYSTEM</h1>
+    <p>Powered by Advanced Deep Learning</p>
+</header>
+
+<div class="dashboard">
+    <div class="card">
+        <h3>Faces Detected</h3>
+        <span id="faceCount">0</span>
+    </div>
+
+    <div class="card">
+        <h3>Current Emotion</h3>
+        <span id="emotion">-</span>
+    </div>
+
+    <div class="card">
+        <h3>AI Confidence</h3>
+        <span id="confidence">0%</span>
+    </div>
+
+    <div class="card">
+        <h3>FPS</h3>
+        <span id="fps">0</span>
+    </div>
+</div>
+
+<div class="main">
+
+    <div class="video-container">
+
+        <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+
+        <div class="scan-line"></div>
+
+        <div class="radar"></div>
+
+    </div>
+
+    <div class="side-panel">
+
+        <div class="drag-drop" id="dropArea">
+            <h3>Upload Image / Video</h3>
+            <p>Drag & Drop Here</p>
+            <br>
+            <label for="uploadInput">Choose File</label>
+            <input type="file" id="uploadInput" accept="image/*,video/*">
+        </div>
+
+        <div class="controls">
+            <button id="startBtn">START CAMERA</button>
+            <button id="stopBtn">STOP CAMERA</button>
+            <button id="captureBtn">CAPTURE</button>
+            <button id="soundBtn">SOUND ON</button>
+            <button id="registerBtn">REGISTER FACE</button>
+        </div>
+
+        <div class="status" id="status">
+            Initializing AI System...
+        </div>
+
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Futuristic AI Surveillance System | Deep Learning Vision
+</footer>
+
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('overlay');
+const ctx = canvas.getContext('2d');
+
+const statusBox = document.getElementById('status');
+
+let stream = null;
+let detectionInterval;
+let soundEnabled = true;
+let lastTime = performance.now();
+let fps = 0;
+
+const faceCountEl = document.getElementById('faceCount');
+const emotionEl = document.getElementById('emotion');
+const confidenceEl = document.getElementById('confidence');
+const fpsEl = document.getElementById('fps');
+
+const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+
+let labeledDescriptors = [];
+
+/* ----------------------------- LOAD MODELS ----------------------------- */
+
+async function loadModels(){
+
+    await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
+        faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
+    ]);
+
+    document.getElementById('loadingScreen').style.display='none';
+
+    updateStatus('AI Models Loaded Successfully');
+}
+
+/* ----------------------------- CAMERA ----------------------------- */
+
+async function startCamera(){
+
+    try{
+
+        stream = await navigator.mediaDevices.getUserMedia({
+            video:{
+                width:{ideal:1280},
+                height:{ideal:720}
+            },
+            audio:false
+        });
+
+        video.srcObject = stream;
+
+        updateStatus('Camera Started');
+
+    }catch(error){
+
+        updateStatus('Camera Permission Denied');
+
+        console.error(error);
+    }
+}
+
+function stopCamera(){
+
+    if(stream){
+
+        stream.getTracks().forEach(track=>track.stop());
+
+        updateStatus('Camera Stopped');
+    }
+}
+
+/* ----------------------------- DETECTION ----------------------------- */
+
+video.addEventListener('play',()=>{
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    detectionInterval = setInterval(async()=>{
+
+        const start = performance.now();
+
+        const detections = await faceapi
+        .detectAllFaces(
+            video,
+            new faceapi.TinyFaceDetectorOptions()
+        )
+        .withFaceLandmarks()
+        .withFaceExpressions()
+        .withAgeAndGender()
+        .withFaceDescriptors();
+
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+
+        faceCountEl.innerText = detections.length;
+
+        if(detections.length===0){
+            emotionEl.innerText='No Face';
+            confidenceEl.innerText='0%';
+        }
+
+        detections.forEach(detection=>{
+
+            const box = detection.detection.box;
+
+            const expressions = detection.expressions;
+
+            const bestExpression = Object.keys(expressions).reduce((a,b)=>
+                expressions[a]>expressions[b]?a:b
+            );
+
+            emotionEl.innerText = bestExpression;
+
+            const confidence = Math.round(
+                detection.detection.score * 100
+            );
+
+            confidenceEl.innerText = confidence + '%';
+
+            /* GLOWING BOX */
+
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#00ffff';
+
+            ctx.strokeRect(box.x,box.y,box.width,box.height);
+
+            /* FACE INFO */
+
+            ctx.font='16px Orbitron';
+            ctx.fillStyle='#00ffff';
+
+            let label = `Age:${Math.round(detection.age)}
+            | ${detection.gender}
+            | ${bestExpression}
+            | ${confidence}%`;
+
+            /* FACE RECOGNITION */
+
+            if(labeledDescriptors.length>0){
+
+                const faceMatcher = new faceapi.FaceMatcher(
+                    labeledDescriptors,
+                    0.6
+                );
+
+                const bestMatch = faceMatcher.findBestMatch(
+                    detection.descriptor
+                );
+
+                if(bestMatch.label !== 'unknown'){
+
+                    label += ` | Recognized: ${bestMatch.label}`;
+                }
+            }
+
+            ctx.fillText(label,box.x,box.y-10);
+
+            /* Coordinates */
+
+            ctx.fillText(
+                `X:${Math.round(box.x)} Y:${Math.round(box.y)}`,
+                box.x,
+                box.y + box.height + 20
+            );
+
+            /* Pulse */
+
+            ctx.beginPath();
+            ctx.arc(
+                box.x + box.width/2,
+                box.y + box.height/2,
+                box.width/1.5,
+                0,
+                Math.PI*2
+            );
+
+            ctx.strokeStyle='rgba(0,255,255,0.2)';
+            ctx.lineWidth=2;
+            ctx.stroke();
+
+        });
+
+        /* FPS */
+
+        const end = performance.now();
+
+        fps = Math.round(1000/(end-start));
+
+        fpsEl.innerText = fps;
+
+    },100);
+
+});
+
+/* ----------------------------- REGISTER FACE ----------------------------- */
+
+document.getElementById('registerBtn').addEventListener('click',async()=>{
+
+    const name = prompt('Enter Person Name');
+
+    if(!name) return;
+
+    const detections = await faceapi
+    .detectSingleFace(
+        video,
+        new faceapi.TinyFaceDetectorOptions()
+    )
+    .withFaceLandmarks()
+    .withFaceDescriptor();
+
+    if(!detections){
+
+        alert('No Face Detected');
+
+        return;
+    }
+
+    const descriptor = Array.from(detections.descriptor);
+
+    localStorage.setItem(
+        `face_${name}`,
+        JSON.stringify(descriptor)
+    );
+
+    loadRegisteredFaces();
+
+    alert('Face Registered Successfully');
+});
+
+/* ----------------------------- LOAD REGISTERED FACES ----------------------------- */
+
+function loadRegisteredFaces(){
+
+    labeledDescriptors = [];
+
+    for(let key in localStorage){
+
+        if(key.startsWith('face_')){
+
+            const name = key.replace('face_','');
+
+            const descriptor = new Float32Array(
+                JSON.parse(localStorage.getItem(key))
+            );
+
+            labeledDescriptors.push(
+                new faceapi.LabeledFaceDescriptors(
+                    name,
+                    [descriptor]
+                )
+            );
+        }
+    }
+}
+
+/* ----------------------------- CAPTURE ----------------------------- */
+
+document.getElementById('captureBtn').addEventListener('click',()=>{
+
+    const link = document.createElement('a');
+
+    link.download = 'capture.png';
+
+    link.href = canvas.toDataURL();
+
+    link.click();
+
+    updateStatus('Screenshot Captured');
+});
+
+/* ----------------------------- SOUND ----------------------------- */
+
+document.getElementById('soundBtn').addEventListener('click',()=>{
+
+    soundEnabled = !soundEnabled;
+
+    document.getElementById('soundBtn').innerText =
+        soundEnabled ? 'SOUND ON' : 'SOUND OFF';
+});
+
+/* ----------------------------- BUTTONS ----------------------------- */
+
+document.getElementById('startBtn').addEventListener('click',startCamera);
+
+document.getElementById('stopBtn').addEventListener('click',stopCamera);
+
+/* ----------------------------- STATUS ----------------------------- */
+
+function updateStatus(message){
+
+    statusBox.innerHTML=`
+        <strong>SYSTEM STATUS:</strong><br><br>
+        ${message}
+    `;
+}
+
+/* ----------------------------- UPLOAD ----------------------------- */
+
+const uploadInput = document.getElementById('uploadInput');
+
+uploadInput.addEventListener('change',handleFile);
+
+async function handleFile(event){
+
+    const file = event.target.files[0];
+
+    if(!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    if(file.type.startsWith('image')){
+
+        const img = await faceapi.bufferToImage(file);
+
+        video.style.display='none';
+
+        canvas.width = img.width;
+
+        canvas.height = img.height;
+
+        ctx.drawImage(img,0,0);
+
+        const detections = await faceapi
+        .detectAllFaces(
+            img,
+            new faceapi.TinyFaceDetectorOptions()
+        )
+        .withFaceLandmarks()
+        .withFaceExpressions()
+        .withAgeAndGender();
+
+        detections.forEach(d=>{
+
+            const box = d.detection.box;
+
+            ctx.strokeStyle='#00ffff';
+            ctx.lineWidth=3;
+
+            ctx.strokeRect(
+                box.x,
+                box.y,
+                box.width,
+                box.height
+            );
+
+            ctx.fillStyle='#00ffff';
+
+            ctx.fillText(
+                `${d.gender} ${Math.round(d.age)}`,
+                box.x,
+                box.y-10
+            );
+        });
+
+        updateStatus('Image Processed');
+
+    }else{
+
+        video.src = url;
+
+        video.play();
+
+        updateStatus('Video Uploaded');
+    }
+}
+
+/* ----------------------------- DRAG DROP ----------------------------- */
+
+const dropArea = document.getElementById('dropArea');
+
+dropArea.addEventListener('dragover',(e)=>{
+
+    e.preventDefault();
+
+    dropArea.classList.add('dragover');
+});
+
+dropArea.addEventListener('dragleave',()=>{
+
+    dropArea.classList.remove('dragover');
+});
+
+dropArea.addEventListener('drop',(e)=>{
+
+    e.preventDefault();
+
+    dropArea.classList.remove('dragover');
+
+    uploadInput.files = e.dataTransfer.files;
+
+    handleFile({target:uploadInput});
+});
+
+/* ----------------------------- INIT ----------------------------- */
+
+(async()=>{
+
+    await loadModels();
+
+    loadRegisteredFaces();
+
+    await startCamera();
+
+})();
+</script>
 
 </body>
 </html>
