@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI FACE DETECTION & RECOGNITION SYSTEM</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Face Detection System</title>
 
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <!-- Face API -->
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 
 <style>
 *{
@@ -19,10 +19,10 @@
 }
 
 body{
-    font-family:'Poppins',sans-serif;
     background:#050816;
-    overflow-x:hidden;
     color:white;
+    font-family:'Poppins',sans-serif;
+    overflow:hidden;
 }
 
 /* Animated Background */
@@ -31,77 +31,126 @@ body::before{
     position:fixed;
     width:200%;
     height:200%;
-    top:-50%;
-    left:-50%;
     background:
-        radial-gradient(circle,#00ffff33 2px,transparent 2px),
+        radial-gradient(circle,#00ffff22 2px,transparent 2px),
         radial-gradient(circle,#9d00ff22 2px,transparent 2px);
-    background-size:60px 60px;
-    animation:bgMove 30s linear infinite;
-    z-index:-2;
+    background-size:50px 50px;
+    animation:moveBg 25s linear infinite;
+    z-index:-1;
 }
 
-@keyframes bgMove{
+@keyframes moveBg{
     0%{transform:translate(0,0);}
     100%{transform:translate(100px,100px);}
 }
 
-.overlay{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:radial-gradient(circle at top,#0d1b3d,#050816);
-    z-index:-1;
-}
-
 header{
     text-align:center;
-    padding:30px 20px;
-    animation:fadeIn 2s ease;
+    padding:20px;
 }
 
 header h1{
     font-family:'Orbitron',sans-serif;
     font-size:3rem;
-    background:linear-gradient(90deg,#00f7ff,#9d00ff);
+    background:linear-gradient(90deg,#00ffff,#9d00ff);
     -webkit-background-clip:text;
     color:transparent;
-    text-shadow:0 0 20px #00ffff88;
+    text-shadow:0 0 20px #00ffff;
 }
 
 header p{
+    color:#aaa;
     margin-top:10px;
-    color:#c5c5c5;
     letter-spacing:2px;
 }
 
-@keyframes fadeIn{
-    from{opacity:0;transform:translateY(-30px);}
-    to{opacity:1;transform:translateY(0);}
+.container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    padding:20px;
 }
 
-.dashboard{
+.video-box{
+    position:relative;
+    width:900px;
+    max-width:95%;
+    border-radius:25px;
+    overflow:hidden;
+    box-shadow:0 0 40px rgba(0,255,255,0.3);
+}
+
+video{
+    width:100%;
+    border-radius:25px;
+    transform:scaleX(-1);
+}
+
+canvas{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+.scan-line{
+    position:absolute;
+    width:100%;
+    height:4px;
+    background:linear-gradient(90deg,transparent,#00ffff,transparent);
+    animation:scan 3s linear infinite;
+    box-shadow:0 0 20px #00ffff;
+}
+
+@keyframes scan{
+    0%{top:0;}
+    100%{top:100%;}
+}
+
+.controls{
+    margin-top:20px;
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+    justify-content:center;
+}
+
+button{
+    padding:14px 25px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(45deg,#00ffff,#9d00ff);
+    color:white;
+    font-family:'Orbitron';
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+    box-shadow:0 0 20px rgba(0,255,255,0.4);
+}
+
+button:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 35px rgba(0,255,255,0.8);
+}
+
+.stats{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
     gap:20px;
-    padding:20px;
-    max-width:1400px;
-    margin:auto;
+    width:90%;
+    margin-top:25px;
 }
 
 .card{
     background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(10px);
     border:1px solid rgba(255,255,255,0.1);
-    backdrop-filter:blur(12px);
-    border-radius:20px;
     padding:20px;
+    border-radius:20px;
+    text-align:center;
     box-shadow:0 0 20px rgba(0,255,255,0.15);
-    transition:0.3s;
-}
-
-.card:hover{
-    transform:translateY(-5px);
-    box-shadow:0 0 30px rgba(0,255,255,0.35);
 }
 
 .card h3{
@@ -114,108 +163,15 @@ header p{
     font-weight:bold;
 }
 
-.main{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:30px;
-    padding:30px;
-}
-
-.video-container{
-    position:relative;
-    width:850px;
-    max-width:95%;
-    border-radius:25px;
-    overflow:hidden;
-    background:#111;
-    box-shadow:0 0 40px rgba(0,255,255,0.25);
-}
-
-video,canvas{
-    width:100%;
-    border-radius:25px;
-}
-
-canvas{
-    position:absolute;
-    top:0;
-    left:0;
-}
-
-.scan-line{
-    position:absolute;
-    width:100%;
-    height:4px;
-    background:linear-gradient(90deg,transparent,#00ffff,transparent);
-    box-shadow:0 0 20px #00ffff;
-    animation:scan 3s linear infinite;
-    z-index:20;
-}
-
-@keyframes scan{
-    0%{top:0;}
-    100%{top:100%;}
-}
-
-.controls{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:15px;
-    padding:20px;
-}
-
-button,label{
-    padding:14px 22px;
-    border:none;
-    border-radius:12px;
-    background:linear-gradient(45deg,#00f7ff,#9d00ff);
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.3s;
-    font-family:'Orbitron';
-    letter-spacing:1px;
-    box-shadow:0 0 15px rgba(0,255,255,0.4);
-}
-
-button:hover,label:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 25px rgba(0,255,255,0.8);
-}
-
-input[type="file"]{
-    display:none;
-}
-
-.side-panel{
-    width:350px;
-    max-width:95%;
-}
-
-.drag-drop{
-    border:2px dashed #00ffff88;
-    padding:30px;
-    border-radius:20px;
-    text-align:center;
-    margin-bottom:20px;
-    background:rgba(255,255,255,0.04);
-}
-
-.drag-drop.dragover{
-    background:rgba(0,255,255,0.1);
-}
-
 .status{
-    padding:15px;
-    background:rgba(255,255,255,0.04);
-    border-radius:15px;
     margin-top:20px;
-    line-height:1.8;
+    background:rgba(255,255,255,0.05);
+    padding:15px 25px;
+    border-radius:15px;
+    color:#00ffff;
 }
 
-.loading-screen{
+.loading{
     position:fixed;
     width:100%;
     height:100%;
@@ -235,219 +191,160 @@ input[type="file"]{
     border-bottom:6px solid #9d00ff;
     border-radius:50%;
     animation:spin 1s linear infinite;
-    box-shadow:0 0 30px #00ffff;
 }
 
 @keyframes spin{
-    to{transform:rotate(360deg);}
+    100%{transform:rotate(360deg);}
 }
 
-.loading-screen h2{
-    margin-top:30px;
+.loading h2{
+    margin-top:20px;
     font-family:'Orbitron';
     color:#00ffff;
 }
 
 footer{
     text-align:center;
-    padding:30px;
+    padding:20px;
     color:#888;
-}
-
-.radar{
-    position:absolute;
-    top:20px;
-    right:20px;
-    width:120px;
-    height:120px;
-    border-radius:50%;
-    border:2px solid rgba(0,255,255,0.3);
-    overflow:hidden;
-}
-
-.radar::before{
-    content:'';
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:conic-gradient(transparent,#00ffff);
-    animation:rotate 2s linear infinite;
-}
-
-@keyframes rotate{
-    100%{transform:rotate(360deg);}
-}
-
-@media(max-width:768px){
-    header h1{
-        font-size:2rem;
-    }
 }
 </style>
 </head>
 
 <body>
 
-<div class="overlay"></div>
-
-<div class="loading-screen" id="loadingScreen">
+<div class="loading" id="loading">
     <div class="loader"></div>
     <h2>Loading AI Models...</h2>
 </div>
 
 <header>
-    <h1>AI FACE DETECTION & RECOGNITION SYSTEM</h1>
+    <h1>AI FACE DETECTION SYSTEM</h1>
     <p>Powered by Advanced Deep Learning</p>
 </header>
 
-<div class="dashboard">
-    <div class="card">
-        <h3>Faces Detected</h3>
-        <span id="faceCount">0</span>
-    </div>
+<div class="container">
 
-    <div class="card">
-        <h3>Current Emotion</h3>
-        <span id="emotion">-</span>
-    </div>
-
-    <div class="card">
-        <h3>AI Confidence</h3>
-        <span id="confidence">0%</span>
-    </div>
-
-    <div class="card">
-        <h3>FPS</h3>
-        <span id="fps">0</span>
-    </div>
-</div>
-
-<div class="main">
-
-    <div class="video-container">
-
+    <div class="video-box">
         <video id="video" autoplay muted playsinline></video>
-        <canvas id="overlay"></canvas>
-
+        <canvas id="canvas"></canvas>
         <div class="scan-line"></div>
-
-        <div class="radar"></div>
-
     </div>
 
-    <div class="side-panel">
+    <div class="controls">
+        <button id="startBtn">START CAMERA</button>
+        <button id="stopBtn">STOP CAMERA</button>
+        <button id="captureBtn">CAPTURE</button>
+    </div>
 
-        <div class="drag-drop" id="dropArea">
-            <h3>Upload Image / Video</h3>
-            <p>Drag & Drop Here</p>
-            <br>
-            <label for="uploadInput">Choose File</label>
-            <input type="file" id="uploadInput" accept="image/*,video/*">
+    <div class="stats">
+        <div class="card">
+            <h3>Faces</h3>
+            <span id="faces">0</span>
         </div>
 
-        <div class="controls">
-            <button id="startBtn">START CAMERA</button>
-            <button id="stopBtn">STOP CAMERA</button>
-            <button id="captureBtn">CAPTURE</button>
-            <button id="soundBtn">SOUND ON</button>
-            <button id="registerBtn">REGISTER FACE</button>
+        <div class="card">
+            <h3>Emotion</h3>
+            <span id="emotion">-</span>
         </div>
 
-        <div class="status" id="status">
-            Initializing AI System...
+        <div class="card">
+            <h3>Confidence</h3>
+            <span id="confidence">0%</span>
         </div>
 
+        <div class="card">
+            <h3>FPS</h3>
+            <span id="fps">0</span>
+        </div>
+    </div>
+
+    <div class="status" id="status">
+        Initializing AI...
     </div>
 
 </div>
 
 <footer>
-    © 2026 Futuristic AI Surveillance System | Deep Learning Vision
+    © 2026 Futuristic AI Face Detection
 </footer>
 
 <script>
 const video = document.getElementById('video');
-const canvas = document.getElementById('overlay');
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
-const statusBox = document.getElementById('status');
-
-let stream = null;
-let detectionInterval;
-let soundEnabled = true;
-let lastTime = performance.now();
-let fps = 0;
-
-const faceCountEl = document.getElementById('faceCount');
+const facesEl = document.getElementById('faces');
 const emotionEl = document.getElementById('emotion');
 const confidenceEl = document.getElementById('confidence');
 const fpsEl = document.getElementById('fps');
+const statusEl = document.getElementById('status');
 
-const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+let stream;
 
-let labeledDescriptors = [];
+/* MODEL URL */
+const MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
 
-/* ----------------------------- LOAD MODELS ----------------------------- */
-
+/* LOAD MODELS */
 async function loadModels(){
+
+    statusEl.innerText = 'Loading AI Models...';
 
     await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
         faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
         faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
-        faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL)
+        faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
     ]);
 
-    document.getElementById('loadingScreen').style.display='none';
+    document.getElementById('loading').style.display='none';
 
-    updateStatus('AI Models Loaded Successfully');
+    statusEl.innerText = 'AI Models Loaded Successfully';
+
+    startCamera();
 }
 
-/* ----------------------------- CAMERA ----------------------------- */
-
+/* START CAMERA */
 async function startCamera(){
 
     try{
 
         stream = await navigator.mediaDevices.getUserMedia({
-            video:{
-                width:{ideal:1280},
-                height:{ideal:720}
-            },
+            video:true,
             audio:false
         });
 
         video.srcObject = stream;
 
-        updateStatus('Camera Started');
+        statusEl.innerText = 'Camera Started';
 
-    }catch(error){
+    }catch(err){
 
-        updateStatus('Camera Permission Denied');
+        statusEl.innerText = 'Camera Permission Denied';
 
-        console.error(error);
+        console.error(err);
     }
 }
 
+/* STOP CAMERA */
 function stopCamera(){
 
     if(stream){
 
         stream.getTracks().forEach(track=>track.stop());
 
-        updateStatus('Camera Stopped');
+        statusEl.innerText = 'Camera Stopped';
     }
 }
 
-/* ----------------------------- DETECTION ----------------------------- */
-
+/* DETECTION */
 video.addEventListener('play',()=>{
 
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    detectionInterval = setInterval(async()=>{
+    setInterval(async()=>{
 
         const start = performance.now();
 
@@ -458,17 +355,11 @@ video.addEventListener('play',()=>{
         )
         .withFaceLandmarks()
         .withFaceExpressions()
-        .withAgeAndGender()
-        .withFaceDescriptors();
+        .withAgeAndGender();
 
         ctx.clearRect(0,0,canvas.width,canvas.height);
 
-        faceCountEl.innerText = detections.length;
-
-        if(detections.length===0){
-            emotionEl.innerText='No Face';
-            confidenceEl.innerText='0%';
-        }
+        facesEl.innerText = detections.length;
 
         detections.forEach(detection=>{
 
@@ -476,69 +367,44 @@ video.addEventListener('play',()=>{
 
             const expressions = detection.expressions;
 
-            const bestExpression = Object.keys(expressions).reduce((a,b)=>
-                expressions[a]>expressions[b]?a:b
+            const emotion = Object.keys(expressions).reduce((a,b)=>
+                expressions[a] > expressions[b] ? a : b
             );
-
-            emotionEl.innerText = bestExpression;
 
             const confidence = Math.round(
                 detection.detection.score * 100
             );
 
+            emotionEl.innerText = emotion;
+
             confidenceEl.innerText = confidence + '%';
 
-            /* GLOWING BOX */
-
+            /* Glow Box */
             ctx.strokeStyle = '#00ffff';
             ctx.lineWidth = 3;
             ctx.shadowBlur = 20;
             ctx.shadowColor = '#00ffff';
 
-            ctx.strokeRect(box.x,box.y,box.width,box.height);
-
-            /* FACE INFO */
-
-            ctx.font='16px Orbitron';
-            ctx.fillStyle='#00ffff';
-
-            let label = `Age:${Math.round(detection.age)}
-            | ${detection.gender}
-            | ${bestExpression}
-            | ${confidence}%`;
-
-            /* FACE RECOGNITION */
-
-            if(labeledDescriptors.length>0){
-
-                const faceMatcher = new faceapi.FaceMatcher(
-                    labeledDescriptors,
-                    0.6
-                );
-
-                const bestMatch = faceMatcher.findBestMatch(
-                    detection.descriptor
-                );
-
-                if(bestMatch.label !== 'unknown'){
-
-                    label += ` | Recognized: ${bestMatch.label}`;
-                }
-            }
-
-            ctx.fillText(label,box.x,box.y-10);
-
-            /* Coordinates */
-
-            ctx.fillText(
-                `X:${Math.round(box.x)} Y:${Math.round(box.y)}`,
+            ctx.strokeRect(
                 box.x,
-                box.y + box.height + 20
+                box.y,
+                box.width,
+                box.height
             );
 
-            /* Pulse */
+            /* Label */
+            ctx.font = '18px Orbitron';
+            ctx.fillStyle = '#00ffff';
 
+            ctx.fillText(
+                `${detection.gender} | Age:${Math.round(detection.age)} | ${emotion}`,
+                box.x,
+                box.y - 10
+            );
+
+            /* Pulse Circle */
             ctx.beginPath();
+
             ctx.arc(
                 box.x + box.width/2,
                 box.y + box.height/2,
@@ -548,233 +414,38 @@ video.addEventListener('play',()=>{
             );
 
             ctx.strokeStyle='rgba(0,255,255,0.2)';
-            ctx.lineWidth=2;
+
             ctx.stroke();
-
         });
-
-        /* FPS */
 
         const end = performance.now();
 
-        fps = Math.round(1000/(end-start));
-
-        fpsEl.innerText = fps;
+        fpsEl.innerText = Math.round(1000/(end-start));
 
     },100);
-
 });
 
-/* ----------------------------- REGISTER FACE ----------------------------- */
+/* BUTTONS */
+document.getElementById('startBtn').addEventListener('click',startCamera);
 
-document.getElementById('registerBtn').addEventListener('click',async()=>{
+document.getElementById('stopBtn').addEventListener('click',stopCamera);
 
-    const name = prompt('Enter Person Name');
-
-    if(!name) return;
-
-    const detections = await faceapi
-    .detectSingleFace(
-        video,
-        new faceapi.TinyFaceDetectorOptions()
-    )
-    .withFaceLandmarks()
-    .withFaceDescriptor();
-
-    if(!detections){
-
-        alert('No Face Detected');
-
-        return;
-    }
-
-    const descriptor = Array.from(detections.descriptor);
-
-    localStorage.setItem(
-        `face_${name}`,
-        JSON.stringify(descriptor)
-    );
-
-    loadRegisteredFaces();
-
-    alert('Face Registered Successfully');
-});
-
-/* ----------------------------- LOAD REGISTERED FACES ----------------------------- */
-
-function loadRegisteredFaces(){
-
-    labeledDescriptors = [];
-
-    for(let key in localStorage){
-
-        if(key.startsWith('face_')){
-
-            const name = key.replace('face_','');
-
-            const descriptor = new Float32Array(
-                JSON.parse(localStorage.getItem(key))
-            );
-
-            labeledDescriptors.push(
-                new faceapi.LabeledFaceDescriptors(
-                    name,
-                    [descriptor]
-                )
-            );
-        }
-    }
-}
-
-/* ----------------------------- CAPTURE ----------------------------- */
-
+/* CAPTURE */
 document.getElementById('captureBtn').addEventListener('click',()=>{
 
     const link = document.createElement('a');
 
-    link.download = 'capture.png';
+    link.download = 'face-detection.png';
 
     link.href = canvas.toDataURL();
 
     link.click();
 
-    updateStatus('Screenshot Captured');
+    statusEl.innerText = 'Screenshot Captured';
 });
 
-/* ----------------------------- SOUND ----------------------------- */
-
-document.getElementById('soundBtn').addEventListener('click',()=>{
-
-    soundEnabled = !soundEnabled;
-
-    document.getElementById('soundBtn').innerText =
-        soundEnabled ? 'SOUND ON' : 'SOUND OFF';
-});
-
-/* ----------------------------- BUTTONS ----------------------------- */
-
-document.getElementById('startBtn').addEventListener('click',startCamera);
-
-document.getElementById('stopBtn').addEventListener('click',stopCamera);
-
-/* ----------------------------- STATUS ----------------------------- */
-
-function updateStatus(message){
-
-    statusBox.innerHTML=`
-        <strong>SYSTEM STATUS:</strong><br><br>
-        ${message}
-    `;
-}
-
-/* ----------------------------- UPLOAD ----------------------------- */
-
-const uploadInput = document.getElementById('uploadInput');
-
-uploadInput.addEventListener('change',handleFile);
-
-async function handleFile(event){
-
-    const file = event.target.files[0];
-
-    if(!file) return;
-
-    const url = URL.createObjectURL(file);
-
-    if(file.type.startsWith('image')){
-
-        const img = await faceapi.bufferToImage(file);
-
-        video.style.display='none';
-
-        canvas.width = img.width;
-
-        canvas.height = img.height;
-
-        ctx.drawImage(img,0,0);
-
-        const detections = await faceapi
-        .detectAllFaces(
-            img,
-            new faceapi.TinyFaceDetectorOptions()
-        )
-        .withFaceLandmarks()
-        .withFaceExpressions()
-        .withAgeAndGender();
-
-        detections.forEach(d=>{
-
-            const box = d.detection.box;
-
-            ctx.strokeStyle='#00ffff';
-            ctx.lineWidth=3;
-
-            ctx.strokeRect(
-                box.x,
-                box.y,
-                box.width,
-                box.height
-            );
-
-            ctx.fillStyle='#00ffff';
-
-            ctx.fillText(
-                `${d.gender} ${Math.round(d.age)}`,
-                box.x,
-                box.y-10
-            );
-        });
-
-        updateStatus('Image Processed');
-
-    }else{
-
-        video.src = url;
-
-        video.play();
-
-        updateStatus('Video Uploaded');
-    }
-}
-
-/* ----------------------------- DRAG DROP ----------------------------- */
-
-const dropArea = document.getElementById('dropArea');
-
-dropArea.addEventListener('dragover',(e)=>{
-
-    e.preventDefault();
-
-    dropArea.classList.add('dragover');
-});
-
-dropArea.addEventListener('dragleave',()=>{
-
-    dropArea.classList.remove('dragover');
-});
-
-dropArea.addEventListener('drop',(e)=>{
-
-    e.preventDefault();
-
-    dropArea.classList.remove('dragover');
-
-    uploadInput.files = e.dataTransfer.files;
-
-    handleFile({target:uploadInput});
-});
-
-/* ----------------------------- INIT ----------------------------- */
-
-(async()=>{
-
-    await loadModels();
-
-    loadRegisteredFaces();
-
-    await startCamera();
-
-})();
+/* INIT */
+loadModels();
 </script>
 
 </body>
